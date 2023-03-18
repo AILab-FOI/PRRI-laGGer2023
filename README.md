@@ -23,7 +23,7 @@ cd laGGer
 
 The installation script assumes that you will use self-signed SSL certificates. In case you want to use your own, edit the script.
 
-In case you want to test and try it out, here you can find an installed `VirtualBox disk image <https://www.dropbox.com/sh/eu619xsmlpmyx5e/AAD3mqXy_BdZqRkS6v9P9ApAa?dl=1>`_.
+In case you want to test and try it out, here you can find an installed `VirtualBox disk image <https://www.dropbox.com/sh/eu619xsmlpmyx5e/AAD3mqXy_BdZqRkS6v9P9ApAa?dl=1>`_
 
 
 
@@ -34,7 +34,7 @@ For laGGer to run properly you have to edit the /config/organization.json file. 
 
 If you are using laGGer from VirtualBox using the image above, make sure to setup port forwarding. The following two scripts can automate that.
 
-Opening ports:
+Linux:
 
 ```
 #!/usr/bin/env bash
@@ -103,7 +103,7 @@ If you are using the built-in self signed certificates, you need to instruct you
 
 Here's how to import a self-signed certificate in Firefox and Chrome:
 
-#Firefox:
+- Firefox:
 
   1.  Open Firefox and click on the menu button (three horizontal lines) in the top-right corner.
   2.  Click on "Options" or "Preferences" (depending on your Firefox version).
@@ -116,7 +116,7 @@ Here's how to import a self-signed certificate in Firefox and Chrome:
 
 Now, Firefox should trust your self-signed certificate for any port on the specified IP address or domain.
 
-#Chrome:
+- Chrome:
 
   1.  Open Chrome and click on the menu button (three vertical dots) in the top-right corner.
   2.  Click on "Settings."
