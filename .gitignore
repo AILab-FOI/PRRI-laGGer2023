@@ -14,7 +14,11 @@ dist/
 downloads/
 eggs/
 .eggs/
+
 lib/
+=======
+#lib/
+>>>>>>> source/main
 lib64/
 parts/
 sdist/
@@ -127,3 +131,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# Emacs backup and random files
+*~
+logfile_*.txt
+.*x*
+
+aux.py
