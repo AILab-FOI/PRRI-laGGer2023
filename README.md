@@ -23,7 +23,7 @@ cd laGGer
 
 The installation script assumes that you will use self-signed SSL certificates. In case you want to use your own, edit the script.
 
-In case you want to test and try it out, here you can find an installed `VirtualBox disk image <https://www.dropbox.com/sh/eu619xsmlpmyx5e/AAD3mqXy_BdZqRkS6v9P9ApAa?dl=1>`_
+In case you want to test and try it out, here you can find an installed [VirtualBox disk image](https://www.dropbox.com/sh/eu619xsmlpmyx5e/AAD3mqXy_BdZqRkS6v9P9ApAa?dl=1)
 
 
 
