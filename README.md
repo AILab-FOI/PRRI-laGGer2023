@@ -131,22 +131,41 @@ Now, Firefox should trust your self-signed certificate for any port on the speci
 
 Now, Chrome should trust your self-signed certificate for any port on the specified IP address or domain.
 
+Setting up the VM
+-----------------------
+1. Copy the .vdi file somewhere on your device
+2. Launch your virtualbox software(in our case Oracle VM VirtualBox)
+3. 'New' button
+    - Name: laGGer
+    - Type: Linux
+    - Version: Debian(64-bit), next
+    - Memory & CPU whatever(reccomend 4096MB & min 2CPU), next
+    - Use an Existing Virtual Hard Disk File -> Choose -> Add -> Find the .vdi and choose it
+    - Finish
+4. Start the VM & login
+5. `cd src`
+6. `./install.sh`
+7. Shut down VM and run one of the scripts above to forward your ports.
+
+
 Setting up Development environment
 ---------------------------------
 After setting up your VM, we will now setup the development environment for it.  
 Prerequisites: ran `install.sh`, `start_root_first.sh`, `start.sh` & port forwarded without errors.
 
-1. Go into your favourite IDE or just use git to clone this repo into a folder.
+1. Go into your favourite IDE or just use git to clone this repo into a folder. (If in VSCode, don't forget to change branches)
 2. Launch your VM and log in.
 3. Go to devices -> Shared folders -> Shared folder settings -> Click the small icon on the right with the plus sign to add a folder
-4. Folder path: Other -> navigate to where you cloned the repo
-5. Folder name: laGGer-dev
-6. Auto-mount & Make Permanent is checked
-7. Ok & apply
-8. In the VM `cd /media` & then `ls`
-9. If you see the folder `sf_laGGer-dev` you're almost there
-10. In the VM `sudo adduser $USER vboxsf`
-11. Reboot VM
-12. In the VM `cd /media` & `cd /sf_laGGer-dev` & `ls`
-13. If all files are visible, you're ready to develop
-14. Develop laGGer and take over the world
+    - Folder path: Other -> navigate to where you cloned the repo
+    - Folder name: laGGer-dev
+    - Auto-mount & Make Permanent is checked
+    - Ok & apply
+4. In the VM `cd /media` & then `ls`
+5. If you see the folder `sf_laGGer-dev` you're almost there
+6. In the VM `sudo adduser $USER vboxsf`
+7. Reboot VM
+8. In the VM `cd /media` & `cd sf_laGGer-dev` & `ls`
+9. If all files are visible, `cp zsync.sh /home/lagger/src/`
+10. `cd ~` & `sudo apt-get install rsync`
+11. Test by creating a file in your shared folder(not on the VM) & run `./zsync.sh`
+12. Develop laGGer and take over the world
