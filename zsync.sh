@@ -4,4 +4,4 @@
 rsync -avu --exclude "Python-3.6.9" --exclude "libwebsockets" \
  --exclude  "libnice" --exclude "janus-gateway" \
  --exclude "paho.mqtt.c" --exclude "rabbitmq-c"  \
- "/home/lagger/src/"  "/media/sf_laGGer-dev" 
+ "/media/sf_laGGer-dev"  "/home/lagger/src/" 
