@@ -133,7 +133,8 @@ Now, Chrome should trust your self-signed certificate for any port on the specif
 
 Setting up Development environment
 ---------------------------------
-After setting up your VM, we will now setup the development environment for it.
+After setting up your VM, we will now setup the development environment for it.  
+Prerequisites: ran `install.sh`, `start_root_first.sh`, `start.sh` & port forwarded without errors.
 
 1. Go into your favourite IDE or just use git to clone this repo into a folder.
 2. Launch your VM and log in.
