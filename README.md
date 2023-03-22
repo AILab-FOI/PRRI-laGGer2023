@@ -51,6 +51,7 @@ done
 
 echo "Done!"
 ```
+If it throws errors, try chmod 777, if it still doesn't work, tough luck.
 
 Or on Windoze:
 
@@ -89,11 +90,11 @@ And then as a normal user:
 If everything work and no errors happen, you should be able to open the interface at:
 
 ```
-http://dragon.foi.hr:49998/list_catridges?player_id=player2
+localhost:49998/list_catridges?player_id=player2
 ```
 
 
-http://dragon.foi.hr:49998/list_catridges?player_id=ivek
+localhost:49998/list_catridges?player_id=ivek
 
 
 Self signed certificates
@@ -129,3 +130,22 @@ Now, Firefox should trust your self-signed certificate for any port on the speci
   9.  Close the "Certificate Manager" window and restart Chrome.
 
 Now, Chrome should trust your self-signed certificate for any port on the specified IP address or domain.
+
+Setting up Development environment
+---------------------------------
+After setting up your VM, we will now setup the development environment for it.
+
+1. Go into your favourite IDE or just use git to clone this repo into a folder.
+2. Launch your VM and log in.
+3. Go to devices -> Shared folders -> Shared folder settings -> Click the small icon on the right with the plus sign to add a folder
+4. Folder path: Other -> navigate to where you cloned the repo
+5. Folder name: laGGer-dev
+6. Auto-mount & Make Permanent is checked
+7. Ok & apply
+8. In the VM `cd /media` & then `ls`
+9. If you see the folder `sf_laGGer-dev` you're almost there
+10. In the VM `sudo adduser $USER vboxsf`
+11. Reboot VM
+12. In the VM `cd /media` & `cd /sf_laGGer-dev` & `ls`
+13. If all files are visible, you're ready to develop
+14. Develop laGGer and take over the world
