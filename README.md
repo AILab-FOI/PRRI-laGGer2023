@@ -146,12 +146,15 @@ Setting up the VM
 5. `cd src`
 6. `./install.sh`
 7. Shut down VM and run one of the scripts above to forward your ports.
+8. Run the `start_root_first.sh` & `start.sh`
+9. Visit `http://localhost:49998/list_catridges?player_id=player2`
+10. You should be able to see the list of available games
 
 
 Setting up Development environment
 ---------------------------------
 After setting up your VM, we will now setup the development environment for it.  
-Prerequisites: ran `install.sh`, `start_root_first.sh`, `start.sh` & port forwarded without errors.
+Prerequisites: ran `install.sh`, `start_root_first.sh`, `start.sh` & port forwarded without errors, aka did the instructions above successfully.
 
 1. Go into your favourite IDE or just use git to clone this repo into a folder. (If in VSCode, don't forget to change branches)
 2. Launch your VM and log in.
@@ -167,5 +170,5 @@ Prerequisites: ran `install.sh`, `start_root_first.sh`, `start.sh` & port forwar
 8. In the VM `cd /media` & `cd sf_laGGer-dev` & `ls`
 9. If all files are visible, `cp zsync.sh /home/lagger/src/`
 10. `cd ~` & `sudo apt-get install rsync`
-11. Test by creating a file in your shared folder(not on the VM) & run `./zsync.sh`
+11. Test by creating a file in your shared folder(not on the VM) & run `./zsync.sh` in the `src` folder, if you get an error like `bash\r`, change the files line ending from CRLF to LF (easy in VSCode)
 12. Develop laGGer and take over the world
