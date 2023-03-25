@@ -57,6 +57,7 @@ Or on Windoze:
 
 ```
 @echo off
+SET PATH=%PATH%;C:\Program Files\Oracle\VirtualBox 
 setlocal enabledelayedexpansion
 
 VBoxManage modifyvm "laGGer" --natpf1 "janus1,tcp,,8088,,8088"
@@ -69,6 +70,7 @@ for /L %%i in (49997,1,50100) do (
     VBoxManage modifyvm "laGGer" --natpf1 "udp-port%%i,udp,,%%i,,%%i"
 )
 
+PAUSE
 echo Done!
 ```
 
@@ -168,7 +170,6 @@ Prerequisites: ran `install.sh`, `start_root_first.sh`, `start.sh` & port forwar
 6. In the VM `sudo adduser $USER vboxsf`
 7. Reboot VM
 8. In the VM `cd /media` & `cd sf_laGGer-dev` & `ls`
-9. If all files are visible, `cp zsync.sh /home/lagger/src/`
-10. `cd ~` & `sudo apt-get install rsync`
-11. Test by creating a file in your shared folder(not on the VM) & run `./zsync.sh` in the `src` folder, if you get an error like `bash\r`, change the files line ending from CRLF to LF (easy in VSCode)
-12. Develop laGGer and take over the world
+9. If all files are visible, `sudo ./start_root_first.sh` & `./start.sh`
+
+**You should now be able to run and test laGGer directly from the shared folder.** 
