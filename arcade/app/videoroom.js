@@ -62,6 +62,7 @@ server_host = getQueryVar( 'janus_host' );
 server_port = getQueryVar( 'janus_port' );
 
 server = "https://" + server_host + ':' + server_port + "/janus";
+console.log( server )
     
 
 var janus = null;

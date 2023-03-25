@@ -3,7 +3,7 @@
     "domain_name":"127.0.0.1",
     "xmpp_server":"localhost",
     "xmpp_register_port":49999,
-    "password":"yoursupersecretpassword",
+    "password":"ChevaposConLepinhas4Eva!",
     "cert":"/etc/ssl/mycerts/server.crt",
     "key":"/etc/ssl/mycerts/server.key",
 
@@ -23,5 +23,5 @@
 
     "crypto_service_host":"localhost",
     "crypto_service_port":49996,
-    "crypto_password":"anotherextrasecretpassword"
+    "crypto_password":"MamaKupilaTraktoraŠČ!"
 }

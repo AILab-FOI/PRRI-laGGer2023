@@ -61,5 +61,5 @@
     },
     "files":[ "game/*", "start.sh" ],
     "start_command":"glhack",
-    "resolution":"480x320"
+    "resolution":"570x430"
 }
