@@ -61,8 +61,8 @@ SET PATH=%PATH%;C:\Program Files\Oracle\VirtualBox
 setlocal enabledelayedexpansion
 
 VBoxManage modifyvm "laGGer" --natpf1 "janus1,tcp,,8088,,8088"
-VBoxManage modifyvm "laGGer" --natpf1 "janus1,tcp,,8089,,8089"
-VBoxManage modifyvm "laGGer" --natpf1 "janus1,tcp,,8188,,8188"
+VBoxManage modifyvm "laGGer" --natpf1 "janus2,tcp,,8089,,8089"
+VBoxManage modifyvm "laGGer" --natpf1 "janus3,tcp,,8188,,8188"
 
 for /L %%i in (49997,1,50100) do (
     echo Opening port %%i
