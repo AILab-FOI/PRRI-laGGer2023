@@ -89,8 +89,6 @@ def arcade( path ):
     return send_from_directory( 'arcade', path )
 
 
-
-
 '''X11Docker AND VNC RELATED FUNCTIONS'''
 
 def run_game( game, port ):
@@ -117,6 +115,7 @@ class GameStreamingAgent( TalkingAgent ):
         super().__init__( *args, **kwargs )
         self.web.add_get("/start_catridge", self.start_catridge, template=None )
         self.web.add_get("/list_catridges", self.list_catridges, template='catridges/list.tpl' )
+        self.web.add_get("/text", self.textroom, template=None )
         self.web.app.add_routes( [ web.static( '/catridges', 'catridges') ] )
 
         self.port = CONF.port_begin
@@ -126,6 +125,15 @@ class GameStreamingAgent( TalkingAgent ):
             self.port = CONF.port_begin
         self.port += 3
         return self.port
+
+
+    async def textroom(self, request):
+        try:
+            return 
+        except:
+            return { 'error':'Something messed up in the html read' }
+        
+
 
     async def list_catridges( self, request ):
         ''' return dummy list of available catridges. Request has to include player_id '''
@@ -188,7 +196,7 @@ class GameStreamingAgent( TalkingAgent ):
         gurl = b64encode( gurl.encode() ).decode( 'ascii' )
         vurl = b64encode( vurl.encode() ).decode( 'ascii' )
 
-        url = "https://%s:%d/arcade/vnc.html?token="  % ( CONF.domain_name, PORT )
+        url = "https://%s:%d/arcade/text.html?token="  % ( CONF.domain_name, PORT )
         
         result = { "gamer_url":url+gurl,
                    "view_url":url+vurl,
@@ -230,7 +238,7 @@ class GameStreamingAgent( TalkingAgent ):
                 self.agent.videorooms[ session_id ] = room_no
                 
     
-    async def setup( self ):
+    async def setup( self ): 
         self.videorooms = {}
         
 CONF = configuration()
