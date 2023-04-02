@@ -173,3 +173,23 @@ Prerequisites: ran `install.sh`, `start_root_first.sh`, `start.sh` & port forwar
 9. If all files are visible, `sudo ./start_root_first.sh` & `./start.sh`
 
 **You should now be able to run and test laGGer directly from the shared folder.** 
+
+Setting up Development environment (Windoze Edition)
+---------------------------------
+Cloning the repository via Windows will break most of the scripts due to CRLF and LF shenanigans, so in order to avoid this the repository should be cloned in the virtual machine itself.
+
+Prerequisites: Same as above
+
+1. Create an empty folder to store your repository in. 
+2. Launch the VM and log in.
+3. Add the **empty** folder to your VM shared folders (Step 3. in the instructions above)
+4. Navigate to the media folder by typing 'cd /media/'
+5. Type `sudo adduser $USER vboxsf` in the VM
+6. Reboot the VM
+7. Enter the shared folder (`cd /media/sf_name-of-the-folder`)
+8. Type `git clone https://github.com/AILab-FOI/PRRI-laGGer2023.git`
+9. You should now see the repo folder by typing `ls` (PRRI-laGGer2023), enter it with `cd PRRI-laGGer2023`
+10. To change branch, first type `git config --global --add safe.directory '*'`
+11. Switch to the laGGer-dev branch with `git checkout origin/laGGer-dev`
+
+All the scripts should now be working correctly, and you should be able to launch laGGer via the repo folder.
