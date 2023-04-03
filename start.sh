@@ -8,6 +8,10 @@ echo "Starting video streaming agent"
 
 screen -S laGGerVideo -d -m ./video_streaming_agent.py
 
+echo "Starting chat streaming agent"
+
+screen -S laGGerChat -d -m ./chat_streaming_agent.py
+
 echo "If there were no errors above you can connect to the laGGer game streaming agent with:"
 
 echo ""
@@ -23,6 +27,16 @@ echo ""
 echo "screen -r laGGerVideo"
 
 echo ""
+
+echo "And to the laGGer chat streaming agent with:"
+
+echo ""
+
+echo "screen -r laGGerChat"
+
+echo ""
+
+
 
 echo "To exit the session, without killing the program use CTRL+a CTRL+d"
 
