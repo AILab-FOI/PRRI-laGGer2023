@@ -5,6 +5,26 @@
 
 /* global iceServers:readonly, Janus:readonly, server:readonly */
 
+function getQueryVar(name, defVal) {
+    "use strict";
+    const varString = atob(document.location.href.match(/token=([A-Za-z0-9._-]*)/)[0].substring(6));
+    const re = new RegExp('.*[?&]' + name + '=([^&#]*)'),
+      match = varString.match(re);
+    if (typeof defVal === 'undefined') { defVal = null; }
+  
+    if (match) {
+      return decodeURIComponent(match[1]);
+    }
+  
+    return defVal;
+  }
+  
+  server_host = getQueryVar('janus_host');
+  server_port = getQueryVar('janus_port');
+  
+  server = "https://" + server_host + ':' + server_port + "/janus";
+  console.log(server)
+
 var janus = null;
 var textroom = null;
 var opaqueId = "textroomtest-" + Janus.randomString(12);
@@ -22,7 +42,7 @@ $(document).ready(function () {
     Janus.init({
         debug: "all", callback: function () {
             // Use a button to start the demo
-            $('#start').one('click', function () {
+            $('#startchat').one('click', function () {
                 $(this).attr('disabled', true).unbind('click');
                 // Make sure the browser supports WebRTC
                 if (!Janus.isWebrtcSupported()) {
