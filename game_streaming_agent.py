@@ -68,6 +68,10 @@ def register_system():
     try:
         register( CONF.building_agent, CONF.password )
     except XMPPRegisterException as e:
+        print(e)
+    try:
+        register(CONF.chat_streaming_agent, CONF.password)
+    except XMPPRegisterException as e:
         print( e )
 
 def encode( text ):
@@ -171,6 +175,14 @@ class GameStreamingAgent( TalkingAgent ):
         templateVideoStreamCallback = Template( metadata=metadata )
         self.add_behaviour( callback, templateVideoStreamCallback )
 
+        callback = self.ChatStreamCallback()
+        metadata = {
+            "performative":"accept-proposal",
+            "in-reply-to":session_id
+        }
+        templateChatStreamCallback = Template(metadata=metadata)
+        self.add_behaviour(callback, templateChatStreamCallback)
+
         
         initialize = self.PrepareGamingRoom( session_id )
         self.add_behaviour( initialize )
@@ -190,13 +202,13 @@ class GameStreamingAgent( TalkingAgent ):
         _thread.start_new_thread( run_flask, () )
 
         # TODO: encode URL (decode later in arcade/app/webutil.js)
-        gurl = "host=baltazar&port=%d&resize=scale&autoconnect=true&shared=true&janus_host=%s&janus_port=%d&user=%s&video_room=%s" % ( PORT+2, CONF.janus_host, CONF.janus_port, player_id, self.videorooms[ session_id ] )
+        gurl = "host=baltazar&port=%d&resize=scale&autoconnect=true&shared=true&janus_host=%s&janus_port=%d&user=%s&video_room=%s&chat_room=%s" % ( PORT+2, CONF.janus_host, CONF.janus_port, player_id, self.videorooms[ session_id ], self.chatrooms[session_id] )
         vurl = gurl + "&view_only=true"
 
         gurl = b64encode( gurl.encode() ).decode( 'ascii' )
         vurl = b64encode( vurl.encode() ).decode( 'ascii' )
 
-        url = "https://%s:%d/arcade/vnc.html?token="  % ( CONF.domain_name, PORT )
+        url = "https://%s:%d/arcade/text.html?token="  % ( CONF.domain_name, PORT )
         
         result = { "gamer_url":url+gurl,
                    "view_url":url+vurl,
@@ -236,10 +248,21 @@ class GameStreamingAgent( TalkingAgent ):
                 session_id = msg.metadata[ 'in-reply-to' ]
                 room_no = msg.metadata[ 'room-no' ]
                 self.agent.videorooms[ session_id ] = room_no
+    
+    class ChatStreamCallback(OneShotBehaviour):
+        async def run(self):
+            msg = Message()
+            msg = await self.receive(timeout=30)
+            if msg:
+                self.agent.say( f"ChatStreamCallback: I received a message: {msg.body}" )
+                session_id = msg.metadata[ 'in-reply-to' ]
+                room_no = msg.metadata[ 'room-no' ]
+                self.agent.chatrooms[ session_id ] = room_no
                 
     
     async def setup( self ): 
         self.videorooms = {}
+        self.chatrooms = {}
         
 CONF = configuration()
 
