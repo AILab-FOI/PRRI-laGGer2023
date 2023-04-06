@@ -137,11 +137,11 @@ class ChatStreamingAgent( TalkingAgent):
                     }
                 )
                 data = await response.json()
-                if data["plugindata"]["data"]["chatroom"] == "created":
+                if data["plugindata"]["data"]["textroom"] == "created":
                     self.agent.rooms[room_name] = self.agent.room
                     self.agent.room += 1
                     success = "Chat room created!"
-                elif data["plugindata"]["data"]["chatroom"] == "event":
+                elif data["plugindata"]["data"]["textroom"] == "event":
                     if "error" in data["plugindata"]["data"].keys():
                         success = data["plugindata"]["data"]["error"]
                     else:
@@ -168,10 +168,10 @@ class ChatStreamingAgent( TalkingAgent):
         }
         templateCreateRoom = Template(metadata=metadata)
         self.add_behaviour(behaviourCreateRoom, templateCreateRoom)
-        self.janus_url = "https://%s:%d/janus" % ( CONF.janus_host, CONF.janus_chat_port )
+        self.janus_url = "https://%s:%d/janus" % ( CONF.janus_host, CONF.janus_port )
         self.session = JanusSession(self.janus_url)
         self.rooms = {}
-        self.room = 1
+        self.room = 2
 
 CONF = configuration()
 

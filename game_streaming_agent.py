@@ -208,7 +208,7 @@ class GameStreamingAgent( TalkingAgent ):
         gurl = b64encode( gurl.encode() ).decode( 'ascii' )
         vurl = b64encode( vurl.encode() ).decode( 'ascii' )
 
-        url = "https://%s:%d/arcade/text.html?token="  % ( CONF.domain_name, PORT )
+        url = "https://%s:%d/arcade/vnc.html?token="  % ( CONF.domain_name, PORT )
         
         result = { "gamer_url":url+gurl,
                    "view_url":url+vurl,
@@ -233,6 +233,19 @@ class GameStreamingAgent( TalkingAgent ):
                 "reply-with":self.session_id
             }
 
+            msg.body = self.session_id
+        
+            await self.send( msg )
+
+            msg = Message()
+            msg.to = "%s@%s" % ( CONF.chat_streaming_agent, CONF.xmpp_server )
+            self.agent.say( msg.to )
+
+            msg.metadata = {
+                "performative":"request",
+                "content":"create-room",
+                "reply-with":self.session_id
+            }
             msg.body = self.session_id
         
             await self.send( msg )
