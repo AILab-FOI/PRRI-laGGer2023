@@ -22,139 +22,131 @@ var textroom_handle;
 var textroom_id = parseInt(2);
 var opaqueId = "textroomtest-" + Janus.randomString(12);
 var JanusText = null;
-//var myid = Janus.randomString(12);
+var myid = Janus.randomString(12);
 username = getQueryVar('user');
 
 var participants = {};
 var transactions = {};
 server_host = getQueryVar('janus_host');
 server_port = getQueryVar('janus_port');
-
-server = "https://" + "192.168.1.15" + ":8089" + "/janus";
+//TODO: FIX GET QUERY FOR IP
+server = "https://" + "192.168.222.11" + ":8089" + "/janus";
 console.log(server);
 
 $(document).ready(function () {
-   /* // Initialize the library (all console debuggers enabled)
-    Janus.init(
-    {
-        debug: "all", callback: function () 
-        {
-             // Use a button to start the demo*/
-            $('#startchat').one('click', function () 
+    /* // Initialize the library (all console debuggers enabled)
+     Janus.init(
+     {
+         debug: "all", callback: function () 
+         {
+              // Use a button to start the demo*/
+    $('#startchat').one('click', () => {
+        // Make sure the browser supports WebRTC
+        if (!Janus.isWebrtcSupported()) {
+            bootbox.alert("Your browser doesn't support text streaming!");
+            return;
+        }
+        JanusText = new Janus(
             {
-                // Make sure the browser supports WebRTC
-                if (!Janus.isWebrtcSupported()) {
-                  bootbox.alert("Your browser doesn't support text streaming!");
-                  return;
-                }
-                JanusText = new Janus(
-                {
-                    server: server,
-                    success: function () {
+                server: server,
+                success: function () {
                     JanusText.attach(
-                    {
-                        plugin: "janus.plugin.textroom",
-                        opaqueId: opaqueId,
-                        success: (pluginHandle) => 
                         {
-                            textroom_handle = pluginHandle;
-                            console.log("Plugin attached! (" + textroom_handle.getPlugin() + ", id=" + textroom_handle.getId() + ")");
-                            var  body = { request:  "setup" };
-	                        console.log("Sending message:", body);
-	                        textroom_handle.send({ message:  body });
-                        },
-                        error: function (error) {
-                            console.error("  -- Error attaching plugin...", error);
-                            bootbox.alert("Error attaching plugin... " + error);
-                        },
-                        iceState: function (state) {
-                            console.log("ICE state changed to " + state);
-                        },
-                        mediaState: function (medium, on) {
-                            console.log("Janus " + (on ? "started" : "stopped") + " receiving our " + medium);
-                        },
-                        webrtcState: function (on) {
-                            console.log("Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
-                            registerTextUsername();
-                        },
-                        ondata: (data) =>
-                        {
-                            var json = JSON.parse(data);
-                            console.log(json);
-                            var transaction = json["transaction"];
-                            if(transactions[transaction]) 
-                            {
-                                // Someone was waiting for this
-                                transactions[transaction](json);
-                                delete  transactions[transaction];
-                                return;
-                            }
-                            var what = json["textroom"];
-                            if(what === "message") 
-                            {
-                                // Incoming message: public or private?
-                                var msg = json["text"];
-                                msg = msg.replace(new  RegExp('<', 'g'), '&lt');
-                                msg = msg.replace(new  RegExp('>', 'g'), '&gt');
-                                var from = json["from"];
-                                // var dateString = getDateString(json["date"]);
-                                var  whisper = json["whisper"];
-                                console.log("its a message");
-                                if(whisper === true) 
-                                {
-                                    // Private message
-                                    console.log("a private message");
-                                    document.querySelector('#chatroom').append('<p>['+'-->'+'] <b>[whisper from ' + participants[from] + ']</b> ' + msg);
-                                } 
-                                else 
-                                {
-                                    // Public message
-                                    console.log("a public message");
-                                    document.querySelector('#chatroom').append(from + ' : ' + msg);
+                            plugin: "janus.plugin.textroom",
+                            opaqueId: opaqueId,
+                            success: (pluginHandle) => {
+                                textroom_handle = pluginHandle;
+                                console.log("Plugin attached! (" + textroom_handle.getPlugin() + ", id=" + textroom_handle.getId() + ")");
+                                var body = { request: "setup" };
+                                console.log("Sending message:", body);
+                                textroom_handle.send({ message: body });
+                            },
+                            error: function (error) {
+                                console.error("  -- Error attaching plugin...", error);
+                                bootbox.alert("Error attaching plugin... " + error);
+                            },
+                            iceState: function (state) {
+                                console.log("ICE state changed to " + state);
+                            },
+                            mediaState: function (medium, on) {
+                                console.log("Janus " + (on ? "started" : "stopped") + " receiving our " + medium);
+                            },
+                            webrtcState: function (on) {
+                                console.log("Janus says our WebRTC PeerConnection is " + (on ? "up" : "down") + " now");
+                                registerTextUsername();
+                            },
+                            ondata: (data) => {
+                                var json = JSON.parse(data);
+                                console.log(json);
+                                var transaction = json["transaction"];
+                                if (transactions[transaction]) {
+                                    // Someone was waiting for this
+                                    transactions[transaction](json);
+                                    delete transactions[transaction];
+                                    return;
                                 }
-                            } 
-                            else if(what === "join")
-                            {
-                                // Somebody joined
-                                console.log("Someone joined.");
-                            }
-                        },
-                        onmessage: function (msg, jsep) {
-                            console.log(" ::: Got a message :::", msg);
-                            if (msg["error"]) {
-                                console.log(msg["error"]);
-                            }
-                            if (jsep) {
-                                // Answer
-                                textroom_handle.createAnswer(
-                                    {
-                                        jsep: jsep,
-                                        // We only use datachannels
-                                        tracks: [
-                                            { type: 'data' }
-                                        ],
-                                        success: function (jsep) {
-                                            console.log("Got SDP!", jsep);
-                                            let body = { request: "ack" };
-                                            textroom_handle.send({ message: body, jsep: jsep });
-                                        },
-                                        error: function (error) {
-                                            console.log("WebRTC error:", error);
-                                        }
-                                    });
-                            }
-                        },
-                    });
+                                var what = json["textroom"];
+                                if (what === "message") {
+                                    // Incoming message: public or private?
+                                    var msg = json["text"];
+                                    msg = msg.replace(new RegExp('<', 'g'), '&lt');
+                                    msg = msg.replace(new RegExp('>', 'g'), '&gt');
+                                    var from = json["from"];
+                                    // var dateString = getDateString(json["date"]);
+                                    var whisper = json["whisper"];
+                                    console.log("its a message");
+                                    if (whisper === true) {
+                                        // Private message
+                                        console.log("a private message");
+                                        document.querySelector('#chatroom').append('<p>[' + '-->' + '] <b>[whisper from ' + participants[from] + ']</b> ' + msg);
+                                    }
+                                    else {
+                                        // Public message
+                                        console.log("a public message");
+                                        document.querySelector('#chatroom').append(from + ' : ' + msg);
+                                    }
+                                }
+                                else if (what === "join") {
+                                    // Somebody joined
+                                    console.log("Someone joined.");
+                                }
+                            },
+                            onmessage: function (msg, jsep) {
+                                console.log(" ::: Got a message :::", msg);
+                                if (msg["error"]) {
+                                    console.log(msg["error"]);
+                                }
+                                if (jsep) {
+                                    // Answer
+                                    textroom_handle.createAnswer(
+                                        {
+                                            jsep: jsep,
+                                            // We only use datachannels
+                                            tracks: [
+                                                { type: 'data' }
+                                            ],
+                                            success: function (jsep) {
+                                                console.log("Got SDP!", jsep);
+                                                let body = { request: "ack" };
+                                                textroom_handle.send({ message: body, jsep: jsep });
+                                            },
+                                            error: function (error) {
+                                                console.log("WebRTC error:", error);
+                                            }
+                                        });
+                                }
+                            },
+                        });
                 },
                 error: function (error) {
                     Janus.error(error);
                     bootbox.alert(error, function () {
-                      //window.location.reload();
+                        //window.location.reload();
                     });
                     console.log(error);
-                  },
+                },
             });
-        });
+    });
     //}});    
 });
 
@@ -162,13 +154,13 @@ function registerTextUsername() {
     username = getQueryVar('user'); // TODO: get this from server
     console.log(username);
     let transaction = Janus.randomString(12);
-        let register = {
-            textroom: "join",
-            transaction: transaction,
-            room: textroom_id,
-            username: username,
-            display: username
-        };
+    let register = {
+        textroom: "join",
+        transaction: transaction,
+        room: textroom_id,
+        username: myid,
+        display: username
+    };
     //myusername = username;
     textroom_handle.data({
         text: JSON.stringify(register),
@@ -176,10 +168,9 @@ function registerTextUsername() {
             bootbox.alert(reason);
         }
     });
-  }
+}
 
-function sendTextData()
-{
+function sendTextData() {
     let data = $('#datasend').val();
     let message = {
         textroom: "message",
@@ -194,32 +185,26 @@ function sendTextData()
     // you a response (meaning you just have to hope it succeeded).
     textroom_handle.data({
         text: JSON.stringify(message),
-        error: function (reason) 
-        { 
-            bootbox.alert(reason); 
+        error: function (reason) {
+            bootbox.alert(reason);
             console.log("Upsic.");
         },
-        success: function () 
-        { 
+        success: function () {
             $('#datasend').val('');
             console.log("Poslano");
         }
     });
 }
 
-function checkEnter(field, event)
-{
+function checkEnter(field, event) {
     let theCode = event.keyCode ? event.keyCode : event.which ? event.which : event.charCode;
-    if (theCode == 13) 
-    {
-        if (field.id == 'datasend')
-        {
+    if (theCode == 13) {
+        if (field.id == 'datasend') {
             sendTextData();
         }
         return false;
-    } 
-    else 
-    {
+    }
+    else {
         return true;
     }
 }
