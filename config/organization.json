@@ -9,7 +9,7 @@
 
     "game_streaming_agent":"gamestreamer",
     "game_streaming_agent_port":49998,
-    "port_begin":50000,
+    "port_begin":50021,
     "port_end":60000,
 
     "save_game_agent":"savegame",
