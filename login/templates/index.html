@@ -29,7 +29,7 @@
 					console.log( xhr.status );
 					if (xhr.status === 200) {
 						// successful login
-						window.location.href = "http://localhost:49998/list_catridges?player_id=" + username;
+						window.location.href = "http://"+ window.location.hostname + ":49998/list_catridges?player_id=" + username;
 					} else {
 						// failed login
 						alert("Invalid login credentials.");
