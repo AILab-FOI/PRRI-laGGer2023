@@ -2,11 +2,10 @@
 <html>
 <head>
 	<title>laGGer - List of available games</title>
-	<link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
 	<link href="https://unpkg.com/nes.css@latest/css/nes.min.css" rel="stylesheet" />
 	<style>
 		html, body, pre, code, kbd, samp, input, button {
-          	      font-family: "Press Start 2P";
+          	      font-family: "INVASION2000";
 		      background-color: black;
 		      color: white;
       		}

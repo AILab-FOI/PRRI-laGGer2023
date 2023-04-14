@@ -22,15 +22,14 @@ var textroom_handle;
 var textroom_id = parseInt(2);
 var opaqueId = "textroomtest-" + Janus.randomString(12);
 var JanusText = null;
-//var myid = Janus.randomString(12);
-username = getQueryVar('user');
+var username = Janus.randomString(12);
 
 var participants = {};
 var transactions = {};
 server_host = getQueryVar('janus_host');
 server_port = getQueryVar('janus_port');
 
-server = "https://" + "192.168.1.15" + ":8089" + "/janus";
+server = "https://localhost:8089/janus";
 console.log(server);
 
 $(document).ready(function () {
@@ -159,7 +158,7 @@ $(document).ready(function () {
 });
 
 function registerTextUsername() {
-    username = getQueryVar('user'); // TODO: get this from server
+    username = Janus.randomString(12);
     console.log(username);
     let transaction = Janus.randomString(12);
         let register = {
