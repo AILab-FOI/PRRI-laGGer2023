@@ -18,7 +18,7 @@ sudo apt -y install python3-pip screen libmicrohttpd-dev libjansson-dev \
 	libavformat-dev libswscale-dev libavdevice-dev libvpx-dev \
 	certbot ufw nxagent xinit xauth xclip x11-xserver-utils \
 	x11-utils catatonit jq weston xwayland xdotool xpra xdg-utils \
-	pulseaudio xfishtank x11vnc
+	pulseaudio xfishtank x11vnc postgresql python3-psycopg2
 
 
 echo "Configuring Prosody" | boxes
@@ -248,6 +248,8 @@ done
 
 echo "Opening ports" | boxes
 
+#login port
+sudo ufw allow 5000
 # laGGer ports
 sudo ufw allow 49996:60000/tcp
 sudo ufw allow 49996:60000/udp

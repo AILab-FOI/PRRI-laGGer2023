@@ -8,6 +8,10 @@ echo "Starting video streaming agent"
 
 screen -S laGGerVideo -d -m ./video_streaming_agent.py
 
+echo "Starting login page"
+
+screen -S laGGerLogin -d -m python3 login/check_login.py
+
 echo "If there were no errors above you can connect to the laGGer game streaming agent with:"
 
 echo ""
