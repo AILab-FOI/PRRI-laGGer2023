@@ -1,7 +1,9 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, session
 import psycopg2
 
 app = Flask(__name__)
+
+app.secret_key = '9c6183b4f5ea06b2a1b918f17f7bd05fbd6271fd67cc576c9b080ab6061d459f'
 
 @app.route( '/login' )
 def login():
@@ -40,6 +42,7 @@ def check_login( username, password ):
     else:
         # login successful
         response = jsonify({'message': 'Login successful'})
+        session["username"] = username;
         response.status_code = 200
 
     # close database connection and return response

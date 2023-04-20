@@ -21,7 +21,7 @@ import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-from flask import Flask, request as req, send_from_directory
+from flask import Flask, request as req, send_from_directory, session
 
 from base64 import b64encode, b64decode
 
@@ -37,7 +37,7 @@ class CryptoError( Exception ):
 
 
 ''' USER AND SYSTEM REGISTRATION '''
-
+amogus = "amonger"
 def register( username, password ):
     url = "https://%s:%d/register/%s/%s" % ( CONF.xmpp_server, CONF.xmpp_register_port, username, password )
     response = requests.get( url, verify=False )
@@ -137,7 +137,9 @@ class GameStreamingAgent( TalkingAgent ):
         games = [ ( img.split( '/' )[ 1 ], img ) for img in glob.iglob( 'catridges/*/thumbnail.png' ) ]
         print( games )
 
-        return { 'games':games }
+        return { 'games':games,
+                'amogus':amogus,
+                 "sessionusername": session["username"] }
         
         
         

@@ -25,7 +25,7 @@
 		}
 		function login() {
 			const urlParams = new URLSearchParams(window.location.search);
-			document.getElementsByName("player_id")[0].value = urlParams.get('player_id');
+			//document.getElementsByName("player_id")[0].value = "amogus" 
 		}
 	</script>
 </head>
@@ -35,7 +35,7 @@
       	<br />
 	<center>
 		<label for="player_id">Your name: </label>
-		<input type="text" name="player_id" value="ivek" id="player_id"/>
+		<input type="text" name="player_id" value={{sessionusername}} id="player_id"/>
 	</center>
 	<br />
 	<br />
