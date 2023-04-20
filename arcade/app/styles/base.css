@@ -19,10 +19,18 @@
  * 10000: Max (used for polyfills)
  */
 
+ @font-face {
+  font-family: 'INVASION2000';
+  font-style: normal;
+  font-weight: 700;
+  src: local('?'), 
+  url('INVASION2000.TTF') format('truetype');
+}
+
 body {
   margin:0;
   padding:0;
-  font-family: Helvetica;
+  font-family: 'INVASION2000';
   /*Background image with light grey curve.*/
   background-color:#494949;
   background-repeat:no-repeat;
@@ -924,12 +932,6 @@ select:active {
 
 /*Default noVNC logo.*/
 /* From: http://fonts.googleapis.com/css?family=Orbitron:700 */
-@font-face {
-  font-family: 'INVASION2000';
-  font-style: normal;
-  font-weight: 700;
-  src: local('?'), url('INVASION2000.ttf') format('truetype');
-}
 
 .noVNC_logo {
   color: #27CBFF;
