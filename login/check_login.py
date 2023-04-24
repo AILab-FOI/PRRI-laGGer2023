@@ -42,7 +42,7 @@ def check_login( username, password ):
     else:
         # login successful
         response = jsonify({'message': 'Login successful'})
-        session["username"] = username;
+        session["username"] = username
         response.status_code = 200
 
     # close database connection and return response
