@@ -2,7 +2,7 @@ CREATE DATABASE userdb;
 \connect userdb
 CREATE USER demo WITH PASSWORD 'password';
 GRANT ALL PRIVILEGES ON DATABASE userdb TO demo;
-GRANT postgrest TO demo;
+GRANT postgres TO demo;
 
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
