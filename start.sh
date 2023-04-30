@@ -20,11 +20,19 @@ echo "screen -r laGGerGame"
 
 echo ""
 
-echo "And to the laGGer video streaming agent with:"
+echo "to the laGGer video streaming agent with:"
 
 echo ""
 
 echo "screen -r laGGerVideo"
+
+echo ""
+
+echo "and to the laGGer video streaming agent with:"
+
+echo ""
+
+echo "screen -r laGGerLogin"
 
 echo ""
 
