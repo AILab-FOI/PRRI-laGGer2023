@@ -1,9 +1,21 @@
 from flask import Flask, jsonify, request, render_template, session
+import redis
+
 import psycopg2
+
+import random
+import string
 
 app = Flask(__name__)
 
+r = redis.from_url('redis://localhost:6379')
+
 app.secret_key = '9c6183b4f5ea06b2a1b918f17f7bd05fbd6271fd67cc576c9b080ab6061d459f'
+
+def generate_random_string():
+    letters = string.ascii_letters + string.digits
+    random_string = ''.join(random.choice(letters) for n in range(20))
+    return random_string
 
 @app.route( '/login' )
 def login():
@@ -41,8 +53,11 @@ def check_login( username, password ):
         response.status_code = 401
     else:
         # login successful
+        key = generate_random_string()
+        r.set(key, username.encode("utf-8"))
+        
         response = jsonify({'message': 'Login successful'})
-        session["username"] = username
+        response.set_cookie("session", key)
         response.status_code = 200
 
     # close database connection and return response
