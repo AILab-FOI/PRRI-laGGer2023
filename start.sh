@@ -27,3 +27,7 @@ echo ""
 echo "To exit the session, without killing the program use CTRL+a CTRL+d"
 
 echo ""
+
+echo "Starting login page"
+
+screen -S laGGerLogin -d -m python3 login/check_login.py
