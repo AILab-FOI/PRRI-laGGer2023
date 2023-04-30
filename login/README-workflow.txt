@@ -4,6 +4,9 @@ Install:
 python3-psycopg2
 postgresql
 
+for python install:
+pip3 install flask-cors
+
 Create SQL database:
 CREATE DATABASE userdb;
 CREATE USER demo WITH SUPERUSER PASSWORD 'password';

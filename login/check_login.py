@@ -1,7 +1,11 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, make_response, redirect
+from flask_cors import CORS
 import psycopg2
+import os
+import datetime
 
 app = Flask(__name__)
+cors = CORS(app, origins=["http://localhost:49998"], methods=["GET", "POST"])
 
 @app.route( '/login' )
 def login():
@@ -39,18 +43,42 @@ def check_login( username, password ):
         response.status_code = 401
     else:
         # login successful
+        session_id = os.urandom(16).hex()
         response = jsonify({'message': 'Login successful'})
+        response.set_cookie('session_id', session_id, secure=True, httponly=True)
         response.status_code = 200
+        # Saving cookie in database
+        expiry_time = datetime.datetime.now() + datetime.timedelta(minutes=30)
+        cur.execute("INSERT INTO sessions (session_id, username, expiry_time) VALUES (%s, %s, %s)", (session_id, username, expiry_time))
 
     # close database connection and return response
-
-    cur.execute("SELECT * FROM users")
-    result = cur.fetchall()
-    for all in result:
-        print(all)
     cur.close()
     conn.close()
     return response
+
+@app.route('/check_session', methods=['GET'])
+def check_session():
+  # connect to the database
+  conn = psycopg2.connect(
+    dbname="userdb",
+    user="demo",
+    password="password",
+    host="localhost",
+    port="5432"
+  )
+  cur = conn.cursor()
+  session_id = request.cookies.get('session_id')
+  cur = conn.cursor()
+  cur.execute("SELECT expiry_time FROM sessions WHERE session_id = %s", [session_id])
+  result = cur.fetchone()
+
+  if not result or result[0] < datetime.now():
+    return jsonify({'status': 'error'})
+  else:
+    expiry_time = datetime.datetime.now() + timedelta(minutes=30)
+    cur.execute("UPDATE sessions SET expiry_time = %s WHERE session_id = %s", [expiry_time, session_id])
+    conn.commit()
+    return jsonify({'status': 'success'})
 
 @app.route('/register_new_user/<username>/<password>')
 def register_new_user( username, password):
@@ -84,10 +112,6 @@ def register_new_user( username, password):
         response.status_code = 402
 
     # close connection
-    cur.execute("SELECT * FROM users")
-    result = cur.fetchall()
-    for all in result:
-        print(all)
     cur.close()
     conn.close()
     return response

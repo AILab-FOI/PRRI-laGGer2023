@@ -30,9 +30,11 @@
 					if (xhr.status === 200) {
 						// successful login
 						window.location.href = "http://"+ window.location.hostname + ":49998/list_catridges?player_id=" + username;
-					} else {
+					} else if (xhr.status === 401) {
 						// failed login
 						alert("Invalid login credentials.");
+					} else {
+						alert("Something else is wrong");
 					}
 				}
 			};

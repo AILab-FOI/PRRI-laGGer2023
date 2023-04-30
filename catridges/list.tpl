@@ -13,6 +13,26 @@
     	</style>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js" ></script>
 	<script>
+		function check_session() {
+			$.ajax({
+				url: 'http://localhost:5000/check_session',
+				type: 'GET',
+				dataType: 'json',
+				success: function(response) {
+					if (response.status == 'success') {
+						// Cookie exists and is valid, continue working
+					} else {
+						// Cookie does not exist or is expired, redirect to login page
+						window.location.replace('http://localhost:5000/check_login');
+					}
+				}
+			});
+		}
+
+		$(document).ready(function() {
+			check_session();
+		});
+
 		function create_instance( game )
 		{
 			var player = $( "#player_id" ).val();
