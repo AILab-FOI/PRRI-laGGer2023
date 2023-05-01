@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, render_template, make_response, redir
 from flask_cors import CORS
 import psycopg2
 import os
-import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 cors = CORS(app, origins=["http://localhost:49998"], methods=["GET", "POST"])
@@ -48,8 +48,9 @@ def check_login( username, password ):
         response.set_cookie('session_id', session_id, secure=True, httponly=True)
         response.status_code = 200
         # Saving cookie in database
-        expiry_time = datetime.datetime.now() + datetime.timedelta(minutes=30)
+        expiry_time = datetime.now() + timedelta(minutes=30)
         cur.execute("INSERT INTO sessions (session_id, username, expiry_time) VALUES (%s, %s, %s)", (session_id, username, expiry_time))
+        conn.commit()
 
     # close database connection and return response
     cur.close()
@@ -71,14 +72,18 @@ def check_session():
   cur = conn.cursor()
   cur.execute("SELECT expiry_time FROM sessions WHERE session_id = %s", [session_id])
   result = cur.fetchone()
+  print("The session ID I recieved:", session_id)
+  print("I found in database:", result)
 
   if not result or result[0] < datetime.now():
-    return jsonify({'status': 'error'})
+    print("Login unauthorised")
+    return jsonify({'status': 'NoCookie'}), {'Access-Control-Allow-Origin': 'http://localhost:49998', 'Access-Control-Allow-Credentials': 'true'}
   else:
-    expiry_time = datetime.datetime.now() + timedelta(minutes=30)
+    print("Login confirmed")
+    expiry_time = datetime.now() + timedelta(minutes=30)
     cur.execute("UPDATE sessions SET expiry_time = %s WHERE session_id = %s", [expiry_time, session_id])
     conn.commit()
-    return jsonify({'status': 'success'})
+    return jsonify({'status': 'success'}), {'Access-Control-Allow-Origin': 'http://localhost:49998', 'Access-Control-Allow-Credentials': 'true'}
 
 @app.route('/register_new_user/<username>/<password>')
 def register_new_user( username, password):

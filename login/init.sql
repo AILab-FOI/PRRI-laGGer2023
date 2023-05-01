@@ -1,7 +1,6 @@
-\connect userdb;
-
 CREATE DATABASE userdb;
-CREATE USER demo WITH PASSWORD 'password';
+\connect userdb;
+CREATE USER demo SUPERUSER LOGIN PASSWORD 'password';
 GRANT ALL PRIVILEGES ON DATABASE userdb TO demo;
 
 CREATE TABLE users (

@@ -18,12 +18,17 @@
 				url: 'http://localhost:5000/check_session',
 				type: 'GET',
 				dataType: 'json',
+				xhrFields: {
+					withCredentials: true
+				},
 				success: function(response) {
 					if (response.status == 'success') {
 						// Cookie exists and is valid, continue working
-					} else {
+					} else if (response.status == 'NoCookie' || response.status == 401) {
 						// Cookie does not exist or is expired, redirect to login page
-						window.location.replace('http://localhost:5000/check_login');
+						window.location.replace('http://localhost:5000/login');
+					} else {
+						alert("Something went wrong");
 					}
 				}
 			});
