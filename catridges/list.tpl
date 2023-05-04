@@ -14,8 +14,10 @@
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js" ></script>
 	<script>
 		function check_session() {
+			var urlParams = new URLSearchParams(window.location.search);
+			var player_id= urlParams.get('player_id');
 			$.ajax({
-				url: 'http://localhost:5000/check_session',
+				url: 'http://localhost:5000/check_session?player_id=' + player_id,
 				type: 'GET',
 				dataType: 'json',
 				xhrFields: {
@@ -34,10 +36,6 @@
 			});
 		}
 
-		$(document).ready(function() {
-			check_session();
-		});
-
 		function create_instance( game )
 		{
 			var player = $( "#player_id" ).val();
@@ -49,9 +47,11 @@
 			});
 		}
 		function login() {
-			const urlParams = new URLSearchParams(window.location.search);
-			document.getElementsByName("player_id")[0].value = urlParams.get('player_id');
+			var urlParams = new URLSearchParams(window.location.search);
+			document.getElementById("player_id").innerHTML= urlParams.get('player_id');
 		}
+
+	check_session();
 	</script>
 </head>
 <body onload="login()">
@@ -59,8 +59,7 @@
       	<br />
       	<br />
 	<center>
-		<label for="player_id">Your name: </label>
-		<input type="text" name="player_id" value="ivek" id="player_id"/>
+		<p>Your name:</p><p id="player_id">Ivek</p>
 	</center>
 	<br />
 	<br />

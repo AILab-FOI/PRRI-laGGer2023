@@ -69,13 +69,14 @@ def check_session():
   )
   cur = conn.cursor()
   session_id = request.cookies.get('session_id')
+  player_id = request.args.get('player_id')
   cur = conn.cursor()
-  cur.execute("SELECT expiry_time FROM sessions WHERE session_id = %s", [session_id])
+  cur.execute("SELECT expiry_time, username FROM sessions WHERE session_id = %s", [session_id])
   result = cur.fetchone()
   print("The session ID I recieved:", session_id)
   print("I found in database:", result)
 
-  if not result or result[0] < datetime.now():
+  if not result or result[0] < datetime.now() or result[1] != player_id:
     print("Login unauthorised")
     return jsonify({'status': 'NoCookie'}), {'Access-Control-Allow-Origin': 'http://localhost:49998', 'Access-Control-Allow-Credentials': 'true'}
   else:
