@@ -11,26 +11,31 @@ function getQueryVar(name, defVal) {
 
     return defVal;
 }
-/*
-const regex = new RegExp("\b(?:\d{1,3}\.){3}\d{1,3}\b");
+
+//const regex = new RegExp("\b(?:\d{1,3}\.){3}\d{1,3}\b");
 const url = window.location.href;
-const match = regex.exec(url);
-const ip = match;*/
+const regex = /\b(?:\d{1,3}\.){3}\d{1,3}\b/;
+
+const match = url.match(regex);
+const ip = match[0];
+console.log(ip);
 
 
 var textroom_handle;
 var textroom_id = parseInt(2);
 var opaqueId = "textroomtest-" + Janus.randomString(12);
 var JanusText = null;
-var myid = Janus.randomString(12);
+//var myid = Janus.randomString(12);
 username = getQueryVar('user');
+myid = username;
+console.log(username);
 
 var participants = {};
 var transactions = {};
 server_host = getQueryVar('janus_host');
 server_port = getQueryVar('janus_port');
 //TODO: FIX GET QUERY FOR IP
-server = "https://" + "192.168.222.11" + ":8089" + "/janus";
+server = "https://" + ip + ":8089" + "/janus";
 console.log(server);
 
 $(document).ready(function () {
