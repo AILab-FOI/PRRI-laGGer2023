@@ -23,6 +23,9 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 from flask import Flask, request as req, send_from_directory
 
+import redis
+from login.check_session import check_session
+
 from base64 import b64encode, b64decode
 
 import _thread
@@ -35,9 +38,9 @@ class XMPPRegisterException( Exception ):
 class CryptoError( Exception ):
     pass
 
+r = redis.from_url('redis://localhost:6379')
 
 ''' USER AND SYSTEM REGISTRATION '''
-
 def register( username, password ):
     url = "https://%s:%d/register/%s/%s" % ( CONF.xmpp_server, CONF.xmpp_register_port, username, password )
     response = requests.get( url, verify=False )
@@ -149,7 +152,16 @@ class GameStreamingAgent( TalkingAgent ):
         games = [ ( img.split( '/' )[ 1 ], img ) for img in glob.iglob( 'catridges/*/thumbnail.png' ) ]
         print( games )
 
-        return { 'games':games }
+        print(request.cookies.get("session"))
+
+        session_cookie = request.cookies.get("session")
+
+        username = check_session(r, session_cookie)
+
+        #username = r.get(request.cookies.get("session")).decode("utf-8")
+        print(username)
+        return { 'games':games,
+                 "sessionusername": username }
         
         
         

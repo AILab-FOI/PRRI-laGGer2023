@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login Page</title>
+</head>
+<body>
+	<h1>Login</h1>
+	<form id="loginForm" action="" method="GET">
+		<label for="username">Username:</label>
+		<input type="text" name="username" required><br>
+		<label for="password">Password:</label>
+		<input type="password" name="password" required><br>
+		<input type="submit" value="Submit">
+	</form>
+	<button onclick="location.href = '/user-registration'">Register</button>
+	<script>
+		// handle form submit event
+		document.getElementById("loginForm").addEventListener("submit", function(event) {
+			event.preventDefault(); // prevent default form submission
+			// get login credentials from form
+			var username = document.getElementsByName("username")[0].value;
+			var password = document.getElementsByName("password")[0].value;
+			// send request to check login credentials
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", "/check_login/" + username + '/' + password);
+			xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === XMLHttpRequest.DONE) {
+					console.log( xhr.status );
+					if (xhr.status === 200) {
+						// successful login
+						window.location.href = "http://"+ window.location.hostname + ":49998/list_catridges?player_id=" + username;
+					} else {
+						// failed login
+						alert("Invalid login credentials.");
+					}
+				}
+			};
+			var data = JSON.stringify({"username": username, "password": password});
+			xhr.send(data);
+		});
+	</script>
+</body>
+</html>

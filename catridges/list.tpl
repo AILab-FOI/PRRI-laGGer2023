@@ -13,25 +13,29 @@
     	</style>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.2/jquery.min.js" ></script>
 	<script>
-	function create_instance( game )
-	{
-		var player = $( "#player_id" ).val();
-		$.getJSON( "/start_catridge?game_id=" + game + "&player_id=" + player, function( data ) {
-			   if( data[ 'error' ] ) return;
-			   $( "#create_" + game ).hide();
-			   $( "#gamer_url_" + game ).html( "<a href='" + data[ 'gamer_url' ] + "'>Game URL</a>" );
-			   $( "#view_url_" + game ).html( "<a href='" + data[ 'view_url' ] + "'>Share URL</a>" );
-		});
-	}
+		function create_instance( game )
+		{
+			var player = $( "#player_id" ).val();
+			$.getJSON( "/start_catridge?game_id=" + game + "&player_id=" + player, function( data ) {
+				if( data[ 'error' ] ) return;
+				$( "#create_" + game ).hide();
+				$( "#gamer_url_" + game ).html( "<a href='" + data[ 'gamer_url' ].replace("127.0.0.1", window.location.hostname) + "'>Game URL</a>" );
+				$( "#view_url_" + game ).html( "<a href='" + data[ 'view_url' ] + "'>Share URL</a>" );
+			});
+		}
+		function login() {
+			const urlParams = new URLSearchParams(window.location.search);
+			//document.getElementsByName("player_id")[0].value = "amogus" 
+		}
 	</script>
 </head>
-<body>
+<body onload="login()">
       	<br />
       	<br />
       	<br />
 	<center>
 		<label for="player_id">Your name: </label>
-		<input type="text" name="player_id" value="ivek" id="player_id"/>
+		<input type="text" name="player_id" value={{sessionusername}} id="player_id"/>
 	</center>
 	<br />
 	<br />
