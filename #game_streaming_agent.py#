@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.6
+#!/usr/bin/env python3
 import argparse
 import json
 import sys
@@ -6,8 +6,6 @@ import os
 import glob
 import subprocess as sp
 
-import warnings
-warnings.filterwarnings("ignore")
 
 from talking_agent import TalkingAgent
 from spade.behaviour import OneShotBehaviour, CyclicBehaviour
@@ -23,9 +21,6 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 from flask import Flask, request as req, send_from_directory
 
-import redis
-from login.check_session import check_session
-
 from base64 import b64encode, b64decode
 
 import _thread
@@ -38,9 +33,9 @@ class XMPPRegisterException( Exception ):
 class CryptoError( Exception ):
     pass
 
-r = redis.from_url('redis://localhost:6379')
 
 ''' USER AND SYSTEM REGISTRATION '''
+
 def register( username, password ):
     url = "https://%s:%d/register/%s/%s" % ( CONF.xmpp_server, CONF.xmpp_register_port, username, password )
     response = requests.get( url, verify=False )
@@ -71,10 +66,6 @@ def register_system():
     try:
         register( CONF.building_agent, CONF.password )
     except XMPPRegisterException as e:
-        print(e)
-    try:
-        register(CONF.chat_streaming_agent, CONF.password)
-    except XMPPRegisterException as e:
         print( e )
 
 def encode( text ):
@@ -96,6 +87,8 @@ def arcade( path ):
     return send_from_directory( 'arcade', path )
 
 
+
+
 '''X11Docker AND VNC RELATED FUNCTIONS'''
 
 def run_game( game, port ):
@@ -109,7 +102,6 @@ def run_vnc( port1, port2 ):
     abs_dir = os.path.dirname( os.path.realpath( '__file__' ) )
     cert = os.path.join( abs_dir, CONF.cert )
     key = os.path.join( abs_dir, CONF.key )
-    print(  [ 'novnc',  '--cert', cert, '--key', key, '--ssl-only', '--listen', str( port2 ), '--vnc', '0.0.0.0:%d' % port1 ] )
     with sp.Popen(  [ 'novnc',  '--cert', cert, '--key', key, '--ssl-only', '--listen', str( port2 ), '--vnc', '0.0.0.0:%d' % port1 ], stdout=sp.PIPE, stderr=sp.STDOUT, bufsize=1 ) as p2, open('logfile_vnc.txt', 'ab') as file:
         for line in p2.stdout: 
             sys.stdout.buffer.write( line ) 
@@ -122,7 +114,6 @@ class GameStreamingAgent( TalkingAgent ):
         super().__init__( *args, **kwargs )
         self.web.add_get("/start_catridge", self.start_catridge, template=None )
         self.web.add_get("/list_catridges", self.list_catridges, template='catridges/list.tpl' )
-        self.web.add_get("/text", self.textroom, template=None )
         self.web.app.add_routes( [ web.static( '/catridges', 'catridges') ] )
 
         self.port = CONF.port_begin
@@ -132,15 +123,6 @@ class GameStreamingAgent( TalkingAgent ):
             self.port = CONF.port_begin
         self.port += 3
         return self.port
-
-
-    async def textroom(self, request):
-        try:
-            return 
-        except:
-            return { 'error':'Something messed up in the html read' }
-        
-
 
     async def list_catridges( self, request ):
         ''' return dummy list of available catridges. Request has to include player_id '''
@@ -152,16 +134,7 @@ class GameStreamingAgent( TalkingAgent ):
         games = [ ( img.split( '/' )[ 1 ], img ) for img in glob.iglob( 'catridges/*/thumbnail.png' ) ]
         print( games )
 
-        print(request.cookies.get("session"))
-
-        session_cookie = request.cookies.get("session")
-
-        username = check_session(r, session_cookie)
-
-        #username = r.get(request.cookies.get("session")).decode("utf-8")
-        print(username)
-        return { 'games':games,
-                 "sessionusername": username }
+        return { 'games':games }
         
         
         
@@ -187,14 +160,6 @@ class GameStreamingAgent( TalkingAgent ):
         templateVideoStreamCallback = Template( metadata=metadata )
         self.add_behaviour( callback, templateVideoStreamCallback )
 
-        callback = self.ChatStreamCallback()
-        metadata = {
-            "performative":"accept-proposal",
-            "in-reply-to":session_id
-        }
-        templateChatStreamCallback = Template(metadata=metadata)
-        self.add_behaviour(callback, templateChatStreamCallback)
-
         
         initialize = self.PrepareGamingRoom( session_id )
         self.add_behaviour( initialize )
@@ -203,18 +168,18 @@ class GameStreamingAgent( TalkingAgent ):
         self.remove_behaviour( initialize )
         await callback.join()
         self.remove_behaviour( callback )
-        
+
         _thread.start_new_thread( run_game, ( game_id, PORT+1 ) )
         _thread.start_new_thread( run_vnc, ( PORT+1, PORT+2 ) )
         
-        
+
         def run_flask():
             app.run( port=PORT, host=HOST, debug=False, ssl_context=( CONF.cert, CONF.key ) )
 
         _thread.start_new_thread( run_flask, () )
 
         # TODO: encode URL (decode later in arcade/app/webutil.js)
-        gurl = "host=baltazar&port=%d&resize=scale&autoconnect=true&shared=true&janus_host=%s&janus_port=%d&user=%s&video_room=%s&chat_room=%s" % ( PORT+2, CONF.janus_host, CONF.janus_port, player_id, self.videorooms[ session_id ], self.chatrooms[session_id] )
+        gurl = "host=baltazar&port=%d&resize=scale&autoconnect=true&shared=true&janus_host=%s&janus_port=%d&user=%s&video_room=%s" % ( PORT+2, CONF.janus_host, CONF.janus_port, player_id, self.videorooms[ session_id ] )
         vurl = gurl + "&view_only=true"
 
         gurl = b64encode( gurl.encode() ).decode( 'ascii' )
@@ -225,8 +190,6 @@ class GameStreamingAgent( TalkingAgent ):
         result = { "gamer_url":url+gurl,
                    "view_url":url+vurl,
                    "session_id":session_id }
-
-        
         return result
 
     class PrepareGamingRoom( OneShotBehaviour ):
@@ -249,19 +212,6 @@ class GameStreamingAgent( TalkingAgent ):
         
             await self.send( msg )
 
-            msg = Message()
-            msg.to = "%s@%s" % ( CONF.chat_streaming_agent, CONF.xmpp_server )
-            self.agent.say( msg.to )
-
-            msg.metadata = {
-                "performative":"request",
-                "content":"create-room",
-                "reply-with":self.session_id
-            }
-            msg.body = self.session_id
-        
-            await self.send( msg )
-
         
 
     class VideoStreamCallback( OneShotBehaviour ):
@@ -273,21 +223,11 @@ class GameStreamingAgent( TalkingAgent ):
                 session_id = msg.metadata[ 'in-reply-to' ]
                 room_no = msg.metadata[ 'room-no' ]
                 self.agent.videorooms[ session_id ] = room_no
-    
-    class ChatStreamCallback(OneShotBehaviour):
-        async def run(self):
-            msg = Message()
-            msg = await self.receive(timeout=30)
-            if msg:
-                self.agent.say( f"ChatStreamCallback: I received a message: {msg.body}" )
-                session_id = msg.metadata[ 'in-reply-to' ]
-                room_no = msg.metadata[ 'room-no' ]
-                self.agent.chatrooms[ session_id ] = room_no
                 
     
-    async def setup( self ): 
+    async def setup( self ):
         self.videorooms = {}
-        self.chatrooms = {}
+        print( self.web.app )
         
 CONF = configuration()
 
@@ -312,6 +252,7 @@ if __name__ == '__main__':
     a = GameStreamingAgent( name, CONF.password )
     a.start()
     a.web.start( CONF.main_host, port=CONF.game_streaming_agent_port )
+    print( a.web.is_started() )
 
     
             

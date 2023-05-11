@@ -37,6 +37,9 @@ MANIFEST
 *.manifest
 *.spec
 
+#Python 3.6.9 Binary
+Python-3.6.9.tgz
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -139,3 +142,4 @@ logfile_*.txt
 .*x*
 
 aux.py
+x11docker
