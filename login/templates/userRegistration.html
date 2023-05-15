@@ -1,17 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Registration Page</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body>
-    <h1>Registration</h1>
-    <form id="registrationForm" action="" method="GET">
-        <label for="username">Username:</label>
-        <input type="text" name="username" required><br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" required><br>
-        <input type="submit" value="Submit">
-    </form>
+    <div class="box">
+		<div class="title">
+			<b>la</b><b class="GG">GG</b><b>er</b>
+			<h2 class="page-info">Registration</h2>
+		</div>
+		<div class="form-wrapper">
+		<form id="registrationForm" action="" method="GET">
+			<div class="textbox-wrapper">
+			<label for="username">Username:</label>
+			<input type="text" name="username" required>
+			</div>
+			<div class="textbox-wrapper">
+			<label for="password">Password:</label>
+			<input type="password" name="password" required>
+			</div>
+			<input class="button" type="submit" value="Submit">
+		</form>
+		</div>
+		</div>
     <script>
 		// handle form submit event
 		document.getElementById("registrationForm").addEventListener("submit", function(event) {
