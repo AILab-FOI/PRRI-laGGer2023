@@ -21,7 +21,7 @@ import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
-from flask import Flask, request as req, send_from_directory
+from flask import Flask, request as req, send_from_directory, redirect
 
 import redis
 from login.check_session import check_session
@@ -87,6 +87,15 @@ def encode( text ):
             return result
         else:
             raise CryptoError( "Error while encoding string: " + text )
+        
+def genereateURL(cookie, usedPort, janusHost, janusPort, videoRoom, chatRoom):
+            username = check_session(r, cookie)
+            print(username)
+            print(cookie)
+            gurl = "host=baltazar&port=%d&resize=scale&autoconnect=true&shared=true&janus_host=%s&janus_port=%d&user=%s&video_room=%s&chat_room=%s" % ( usedPort+2, janusHost, janusPort, username, videoRoom, chatRoom)
+            gurl = b64encode( gurl.encode() ).decode( 'ascii' )
+            url = "https://%s:%d/arcade/vnc.html?token="  % ( CONF.domain_name, usedPort)
+            return redirect(url+gurl, code=302)
 
 '''FLASK APP FOR ARCADE'''
     
@@ -163,8 +172,6 @@ class GameStreamingAgent( TalkingAgent ):
         return { 'games':games,
                  "sessionusername": username }
         
-        
-        
     async def start_catridge( self, request ):
         ''' request has to include game_id and player_id '''
         try:
@@ -211,8 +218,8 @@ class GameStreamingAgent( TalkingAgent ):
         def join_session(session_id):
             # Logic to handle joining the session
             # You can replace the print statement with your own implementation
-            print(f"Joining session {session_id}")
-            return "Session joined successfully"
+            print(f"Joining session pre function {session_id}")
+            return genereateURL(req.cookies.get("session"), PORT, CONF.janus_host, CONF.janus_port, self.videorooms[ session_id ], self.chatrooms[session_id]  )
         
         def run_flask():
             app.run( port=PORT, host=HOST, debug=False, ssl_context=( CONF.cert, CONF.key ) )
