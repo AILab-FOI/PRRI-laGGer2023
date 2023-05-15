@@ -108,7 +108,8 @@ $(document).ready(function () {
                                     else {
                                         // Public message
                                         console.log("a public message");
-                                        document.querySelector('#chatroom').append(from + ' : ' + msg);
+                                        $('#chatroom').append('<p><b>' + from + ':</b> ' + msg);
+                                        $('#chatroom').get(0).scrollTop = $('#chatroom').get(0).scrollHeight;
                                     }
                                 }
                                 else if (what === "join") {
