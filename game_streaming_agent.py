@@ -206,7 +206,13 @@ class GameStreamingAgent( TalkingAgent ):
         
         _thread.start_new_thread( run_game, ( game_id, PORT+1 ) )
         _thread.start_new_thread( run_vnc, ( PORT+1, PORT+2 ) )
-        
+
+        @app.route('/join/<session_id>')
+        def join_session(session_id):
+            # Logic to handle joining the session
+            # You can replace the print statement with your own implementation
+            print(f"Joining session {session_id}")
+            return "Session joined successfully"
         
         def run_flask():
             app.run( port=PORT, host=HOST, debug=False, ssl_context=( CONF.cert, CONF.key ) )
@@ -218,12 +224,12 @@ class GameStreamingAgent( TalkingAgent ):
         vurl = gurl + "&view_only=true"
 
         gurl = b64encode( gurl.encode() ).decode( 'ascii' )
-        vurl = b64encode( vurl.encode() ).decode( 'ascii' )
 
         url = "https://%s:%d/arcade/vnc.html?token="  % ( CONF.domain_name, PORT )
+        vurl = "https://%s:%d/join/"  % ( CONF.domain_name, PORT )
         
         result = { "gamer_url":url+gurl,
-                   "view_url":url+vurl,
+                   "view_url":vurl+session_id,
                    "session_id":session_id }
 
         
