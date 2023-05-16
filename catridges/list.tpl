@@ -43,7 +43,7 @@
 				<rect y="60" width="100" height="20"></rect>
 			</svg>
 			<nav class="header__nav">
-				<a class="header__link" href="#">kero679</a>
+				<a class="header__link" href="#">{{sessionusername}}</a>
 				<a class="button" href="#">LOG OUT</a>
 			</nav>
 		</div>

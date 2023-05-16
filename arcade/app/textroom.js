@@ -13,36 +13,30 @@ function getQueryVar(name, defVal) {
     return defVal;
 }
 
-function extractIPAndPort(url) {
-    const re = /^https?:\/\/([^\s:]+):(\d+)/;
-    const match = re.exec(url);
-    if (match) {
-        const ipAddress = match[1];
-        const port = match[2];
-        return ipAddress;
-    }
-    return null;
-}
-
-/*
-const regex = new RegExp("\b(?:\d{1,3}\.){3}\d{1,3}\b");
 const url = window.location.href;
-const match = regex.exec(url);
-const ip = match;*/
+const regex = /\b(?:\d{1,3}\.){3}\d{1,3}\b/;
+
+const match = url.match(regex);
+const ip = match[0];
+console.log(ip);
 
 
 var textroom_handle;
 var textroom_id = parseInt(2);
 var opaqueId = "textroomtest-" + Janus.randomString(12);
 var JanusText = null;
-var username = Janus.randomString(12);
+
+username = getQueryVar('user');
+myid = username;
+console.log(username);
 
 var participants = {};
 var transactions = {};
 server_host = extractIPAndPort(window.location.href);
 server_port = getQueryVar('janus_port');
+//TODO: FIX GET QUERY FOR IP
+server = "https://" + ip + ":8089" + "/janus";
 
-server = "https://" + server_host + ":8089/janus";
 console.log(server);
 
 $(document).ready(function () {
@@ -52,7 +46,7 @@ $(document).ready(function () {
          debug: "all", callback: function () 
          {
               // Use a button to start the demo*/
-    $('#startchat').one('click', function () {
+    $('#startchat').one('click', () => {
         // Make sure the browser supports WebRTC
         if (!Janus.isWebrtcSupported()) {
             bootbox.alert("Your browser doesn't support text streaming!");
@@ -115,7 +109,8 @@ $(document).ready(function () {
                                     else {
                                         // Public message
                                         console.log("a public message");
-                                        document.querySelector('#chatroom').append(from + ' : ' + msg);
+                                        $('#chatroom').append('<p><b>' + from + ':</b> ' + msg);
+                                        $('#chatroom').get(0).scrollTop = $('#chatroom').get(0).scrollHeight;
                                     }
                                 }
                                 else if (what === "join") {
@@ -170,7 +165,7 @@ function registerTextUsername() {
         textroom: "join",
         transaction: transaction,
         room: textroom_id,
-        username: username,
+        username: myid,
         display: username
     };
     //myusername = username;

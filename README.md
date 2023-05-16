@@ -133,6 +133,7 @@ Now, Firefox should trust your self-signed certificate for any port on the speci
 
 Now, Chrome should trust your self-signed certificate for any port on the specified IP address or domain.
 
+
 Setting up the VM
 -----------------------
 1. Copy the .vdi file somewhere on your device
@@ -193,3 +194,7 @@ Prerequisites: Same as above
 11. Switch to the laGGer-dev branch with `git checkout origin/laGGer-dev`
 
 All the scripts should now be working correctly, and you should be able to launch laGGer via the repo folder.
+=======
+Database specific setup
+-----------------------
+Tutorial available in `/login/README-workflow.txt`
