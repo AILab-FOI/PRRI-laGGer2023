@@ -1,6 +1,7 @@
 function getQueryVar(name, defVal) {
     "use strict";
     const varString = atob(document.location.href.match(/token=([A-Za-z0-9._-]*)/)[0].substring(6));
+    console.log(varString);
     const re = new RegExp('.*[?&]' + name + '=([^&#]*)'),
         match = varString.match(re);
     if (typeof defVal === 'undefined') { defVal = null; }
@@ -12,7 +13,6 @@ function getQueryVar(name, defVal) {
     return defVal;
 }
 
-//const regex = new RegExp("\b(?:\d{1,3}\.){3}\d{1,3}\b");
 const url = window.location.href;
 const regex = /\b(?:\d{1,3}\.){3}\d{1,3}\b/;
 
@@ -25,17 +25,18 @@ var textroom_handle;
 var textroom_id = parseInt(2);
 var opaqueId = "textroomtest-" + Janus.randomString(12);
 var JanusText = null;
-//var myid = Janus.randomString(12);
+
 username = getQueryVar('user');
 myid = username;
 console.log(username);
 
 var participants = {};
 var transactions = {};
-server_host = getQueryVar('janus_host');
+server_host = extractIPAndPort(window.location.href);
 server_port = getQueryVar('janus_port');
 //TODO: FIX GET QUERY FOR IP
 server = "https://" + ip + ":8089" + "/janus";
+
 console.log(server);
 
 $(document).ready(function () {
@@ -157,7 +158,7 @@ $(document).ready(function () {
 });
 
 function registerTextUsername() {
-    username = getQueryVar('user'); // TODO: get this from server
+    username = Janus.randomString(12);
     console.log(username);
     let transaction = Janus.randomString(12);
     let register = {

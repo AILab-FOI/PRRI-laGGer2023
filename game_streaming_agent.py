@@ -102,6 +102,7 @@ def genereateURL(cookie, usedPort, janusHost, janusPort, videoRoom, chatRoom):
 app = Flask( __name__, static_url_path='' )
 @app.route( '/arcade/<path:path>' )
 def arcade( path ):
+    print(send_from_directory( 'arcade', path ))
     return send_from_directory( 'arcade', path )
 
 
