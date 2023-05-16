@@ -69,7 +69,8 @@ var janus = null;
 var sfutest = null;
 var opaqueId = "videoroomtest-" + Janus.randomString(12);
 
-var myroom = parseInt(1);  // Demo room
+var myroom = parseInt(getQueryVar('video_room') - 1);  // Janky workaround for starting streaming, no clue 
+console.log(myroom);
 var myusername = null;
 var myid = null;
 var mystream = null;
@@ -110,7 +111,7 @@ $(document).ready(function () {
                     console.log("Plugin attached! (" + sfutest.getPlugin() + ", id=" + sfutest.getId() + ")");
                     Janus.log("  -- This is a publisher/manager");
                     // Prepare the username registration
-                    $('#videojoin').removeClass('hide').show();
+                    // $('#videojoin').removeClass('hide').show();
                     /*$('#registernow').removeClass('hide').show();*/
                     //$('#register').click(registerUsername);
                     /*$('#username').focus();*/
