@@ -1,11 +1,3 @@
-@font-face {
-    font-family: INVASION2000;
-    font-style: normal;
-    font-weight: 700;
-    src: local('?'),
-    url('INVASION2000.TTF') format('truetype');
-}
-
 body {
     background: url(city_pixelated_1.png) no-repeat center center fixed;
     -webkit-background-size: cover;
@@ -18,52 +10,51 @@ body {
     height: 100%;
     overflow-x: hidden;
 }
-
-.box {
+  
+.container {
     display: block;
     text-align: center;
-    min-width: 576px;
-    min-height: 723px;
+    min-width: 400px;
+    min-height: 530px;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     position: absolute;
-    box-sizing:border-box;
+    box-sizing: border-box;
     width: 30%;
     margin-bottom: 70%;
     border: 6px solid #27CBFF;
     background: linear-gradient(180deg, rgba(250, 22, 255, 0.25) 0%, rgba(0, 0, 0, 0) 100%), rgba(0, 0, 0, 0.8);
 }
-
-.title {
-    font-size: 74px;
+  
+.container__title {
     text-align: center;
     margin-top: 10%;
-    color: #27CBFF;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 11px #00DDF7;
+    color: #27CBFF;
+    font-size: 24px;
 }
 
-.page-info {
-    font-size: 48px;
+.container__title-logo {
+    font-size: 74px;
     text-align: center;
-    margin: 2%;
-    color: #27CBFF;
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 11px #00DDF7;
 }
 
-.GG {
+.container__title-logo .container__title--highlighted  {
     text-shadow: 0px 3.13253px 12.5301px #FA00FF, 0px 4.6988px 0px #720D83;
     color: #FA16FF;
+    margin: -32px;
 }
 
-.form-wrapper {
+.container__form-wrapper {
     position: relative;
     text-align: center;
     margin: 10%;    
     display: block;
 }
 
-.textbox-wrapper {
+.container__textbox-wrapper  {
     text-align: center;
     margin: 12%;
     display: grid;  
@@ -78,8 +69,11 @@ label {
 }
 
 input[type="text"], input[type="password"] {
+    -webkit-appearance: none;
+    box-shadow : none !important;
     color: #FFFFFF;
     font-family: inherit;
+    padding: 12px 5px;
     font-size: 30px;
     width: 100%;
     text-shadow: 0px 2px 0px #27CBFF;
@@ -87,14 +81,15 @@ input[type="text"], input[type="password"] {
     background: linear-gradient(180deg, rgba(39, 151, 255, 0.25) 0%, rgba(255, 22, 106, 0.25) 100%);
 }
 
-.button {
-    background: linear-gradient(180deg, rgba(39, 151, 255, 0.25) 0%, rgba(255, 22, 106, 0.25) 100%);
-    color: #27CBFF;
+.container__button {
+    background: linear-gradient(180deg, rgba(39, 151, 255, 0.55) 0%, rgba(255, 22, 106, 0.55) 100%);
+    color: white;
     font-family: inherit;
     font-size: 30px;
     text-align: center;
     margin: 12px;
     width: 75%;
     box-sizing: border-box;
-    text-shadow: 0px 3.13253px 12.5301px #FA00FF, 0px 4.6988px 0px #720D83;
+    padding: 12px 5px;
+    text-shadow: 0px 3.13253px 12.5301px rgba(255, 22, 106, 0.55), 0px 4.6988px 0px rgba(255, 22, 106, 0.55);
 }
