@@ -10,7 +10,7 @@ body {
     height: 100%;
     overflow-x: hidden;
 }
-  
+
 .container {
     display: block;
     text-align: center;
@@ -26,7 +26,7 @@ body {
     border: 6px solid #27CBFF;
     background: linear-gradient(180deg, rgba(250, 22, 255, 0.25) 0%, rgba(0, 0, 0, 0) 100%), rgba(0, 0, 0, 0.8);
 }
-  
+
 .container__title {
     text-align: center;
     margin-top: 10%;
@@ -41,23 +41,22 @@ body {
     text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 11px #00DDF7;
 }
 
-.container__title-logo .container__title--highlighted  {
+.container__title-logo .container__title--highlighted {
     text-shadow: 0px 3.13253px 12.5301px #FA00FF, 0px 4.6988px 0px #720D83;
     color: #FA16FF;
-    margin: -32px;
 }
 
 .container__form-wrapper {
     position: relative;
     text-align: center;
-    margin: 10%;    
+    margin: 10%;
     display: block;
 }
 
-.container__textbox-wrapper  {
+.container__textbox-wrapper {
     text-align: center;
     margin: 12%;
-    display: grid;  
+    display: grid;
 }
 
 label {
@@ -68,9 +67,10 @@ label {
     margin: 5%;
 }
 
-input[type="text"], input[type="password"] {
+input[type="text"],
+input[type="password"] {
     -webkit-appearance: none;
-    box-shadow : none !important;
+    box-shadow: none !important;
     color: #FFFFFF;
     font-family: inherit;
     padding: 12px 5px;
