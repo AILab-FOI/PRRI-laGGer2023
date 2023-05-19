@@ -178,7 +178,7 @@ html {
 body {
     font-family: 'INVASION2000';
     background:
-        linear-gradient(30deg, rgba(250, 22, 255, 0.45), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.45)),
+        linear-gradient(60deg, rgba(250, 22, 255, 0.475), rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.45)),
         url(bg-images/urban-city.png) no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -257,7 +257,6 @@ body {
     display: grid;
     margin: auto;
     padding: 4%;
-    grid-gap: 50px;
 }
 
 .game-container__card {
@@ -337,12 +336,14 @@ body {
 @media screen and (min-width: 768px) {
     .game-container {
         grid-template-columns: repeat(2, 1fr);
+        grid-gap: 48px;
     }
 }
 
 @media screen and (min-width: 1024px) {
     .game-container {
         grid-template-columns: repeat(3, 1fr);
+        grid-gap: 64px;
     }
 
     .header__hamburger {
@@ -358,5 +359,6 @@ body {
 @media screen and (min-width: 1300px) {
     .game-container {
         grid-template-columns: repeat(4, 1fr);
+        grid-gap: 64px;
     }
 }
