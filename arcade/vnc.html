@@ -69,30 +69,81 @@
     <script type="text/javascript" src="app/janus.js"></script>
     <script type="text/javascript" src="app/videoroom.js"></script>
     <script type="text/javascript" src="app/textroom.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.7/cerulean/bootstrap.min.css"
-        type="text/css" />
     <link rel="stylesheet" href="app/styles/demo.css" type="text/css" />
+    <link rel="stylesheet" href="app/styles/chat.css" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.2/css/font-awesome.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.css" />
-
-
     <!-- this is included as a normal file in order to catch script-loading errors as well -->
     <script src="app/error-handler.js"></script>
-
+    
     <!-- begin scripts -->
     <script type="module" crossorigin="anonymous" src="app/ui.js"></script>
     <script nomodule src="legacy/vendor/promise.js"></script>
     <script nomodule src="legacy/app.js"></script>
     <!--<script src="app/stream-client.js"></script>
+        
+        <script>
+            $( document ).ready(function() {
+                start_stream();
+            });
+            
+        </script>-->
+        
+        <!-- end scripts -->
+        
+        <script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.11"></script>
+        <script>
+          window.addEventListener('load', function() {
+            const chatStream = document.getElementById('chat-stream');
+            const chatIcon = document.querySelector('.chat-icon');
+        
+            interact(chatStream).draggable({
+                allowFrom: chatIcon,
+                onmove: dragMoveListener,
+                modifiers: [
+                interact.modifiers.restrictRect({
+                    restriction: 'viewport'
+                })
+                ],
+                inertia: true
+            });
 
-    <script>
-      $( document ).ready(function() {
-	  start_stream();
-      });
-      
-     </script>-->
-
-    <!-- end scripts -->
+            interact(chatStream).resizable({
+                edges: {
+                    top: true,
+                    left: true,
+                    bottom: true,
+                    right: true
+                },
+                modifiers: [
+                interact.modifiers.restrictSize({
+                    min: { width: 200, height: 150 }
+                }),
+                ],
+                listeners: {
+                    move(event) {
+                        const { width, height } = event.rect;
+                        chatStream.style.width = `${width}px`;
+                        chatStream.style.height = `${height}px`;
+                    }
+                }
+            });
+        
+            function dragMoveListener(event) {
+              const target = event.target;
+              const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+              const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+        
+              target.style.transform = `translate(${x}px, ${y}px)`;
+        
+              target.setAttribute('data-x', x);
+              target.setAttribute('data-y', y);
+            }
+          });
+        </script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> 
+    
 </head>
 
 <body>
@@ -118,20 +169,16 @@
 
         <audio id="audio" autoplay="true"></audio>
     </div>
-
-    <div id="chat-stream" style="position: absolute;top:100px; right:0px; z-index:0; width: 15%;" align="right">
+    
+    <div id="chat-stream" style="position: absolute; width: 15%;">
+        <i class="fas fa-arrows-alt chat-icon"></i>
         <!-- <button class="btn btn-default" autocomplete="off" id="startchat">Start chat</button> -->
         <div class="panel panel-default">
-            <div class="panel-body relative" style="overflow-x: auto; height: 200px;" id="chatroom">
-            </div>
-            <input class="form-control" type="text" placeholder="Write a chatroom message" autocomplete="off"
-                id="datasend" onkeypress="return checkEnter(this, event);">
+          <div class="panel-body relative" style="overflow-x: auto; height: 400px;" id="chatroom">
+          </div>
+          <input class="form-control" type="text" placeholder="Write a chatroom message" autocomplete="off" id="datasend" onkeypress="return checkEnter(this, event);">
         </div>
-    </div>
-
-    <script>
-
-    </script>
+      </div>
 
     <div id="noVNC_fallback_error" class="noVNC_center">
         <div>
