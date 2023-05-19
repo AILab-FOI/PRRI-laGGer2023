@@ -2,7 +2,6 @@ from flask import Flask, jsonify, request, render_template, session
 import redis
 
 import psycopg2
-
 import random
 import string
 
@@ -46,6 +45,7 @@ def check_login( username, password ):
     # verify login credentials against the database
     cur.execute("SELECT * FROM users WHERE username=%s AND password=%s", (username, password))
     result = cur.fetchone()
+    print(result)
 
     if result is None:
         # login failed

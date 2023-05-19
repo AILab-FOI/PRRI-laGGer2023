@@ -5,7 +5,7 @@ OPTION 1 (automated):
 
 OPTION 2 (manual):
   Install:
-  sudo apt-get install python3-psycopg2 postgresql
+  sudo apt-get install python3-psycopg2 postgresql redis-server
   sudo ufw allow 5000
 
   Execute init.sql in PostgreSQL:

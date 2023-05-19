@@ -3,6 +3,8 @@
 # Install dependencies
 sudo apt-get install -y python3-psycopg2 postgresql
 sudo ufw allow 5000
+sudo ufw allow 5432
+sudo ufw allow 6379
 
 # Move init.sql to home directory
 cp init.sql ~/init.sql
