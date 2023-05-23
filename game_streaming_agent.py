@@ -29,6 +29,10 @@ import _thread
 
 from config import configuration
 
+#from virtual_sink import *
+
+import time
+
 class XMPPRegisterException( Exception ):
     pass
 
@@ -95,9 +99,9 @@ def arcade( path ):
 
 '''X11Docker AND VNC RELATED FUNCTIONS'''
 
-def run_game( game, port ):
+def run_game( game, port, sinkName ):
     gconf = configuration( os.path.join( 'catridges', game, 'catridge_template.json' ) )
-    with sp.Popen(  [ 'bash', 'run_game.sh', game, str( port ), gconf.resolution ], stdout=sp.PIPE, stderr=sp.STDOUT, bufsize=1 ) as p1, open('logfile_game.txt', 'ab') as file:
+    with sp.Popen(  [ 'bash', 'run_game.sh', game, str( port ), gconf.resolution, sinkName ], stdout=sp.PIPE, stderr=sp.STDOUT, bufsize=1 ) as p1, open('logfile_game.txt', 'ab') as file:
         for line in p1.stdout: 
             sys.stdout.buffer.write( line ) 
             file.write( line )
@@ -124,12 +128,15 @@ class GameStreamingAgent( TalkingAgent ):
 
         self.port = CONF.port_begin
 
+    
+
     def rotate_port( self ):
         if self.port >= CONF.port_end:
             self.port = CONF.port_begin
         self.port += 3
         return self.port
-
+    
+    
 
     async def textroom(self, request):
         try:
@@ -165,6 +172,7 @@ class GameStreamingAgent( TalkingAgent ):
         PORT = self.rotate_port()
         HOST = CONF.main_host
 
+
         session_id = "%s_%s_%d" % ( game_id, player_id, PORT )
         
         callback = self.VideoStreamCallback() #  game_id, HOST, PORT 
@@ -191,8 +199,13 @@ class GameStreamingAgent( TalkingAgent ):
         self.remove_behaviour( initialize )
         await callback.join()
         self.remove_behaviour( callback )
+
+        #for some reason, importing virtual_sink.py and creating a VirtualSink object within this method breaks everything
+        sinkName = 'VirtualSink' + str(int(time.time()))
+        sp.run(["pacmd", "load-module", "module-null-sink", "sink_name=" + sinkName])
+
         
-        _thread.start_new_thread( run_game, ( game_id, PORT+1 ) )
+        _thread.start_new_thread( run_game, ( game_id, PORT+1, sinkName) )
         _thread.start_new_thread( run_vnc, ( PORT+1, PORT+2 ) )
         
         
@@ -300,6 +313,3 @@ if __name__ == '__main__':
     a = GameStreamingAgent( name, CONF.password )
     a.start()
     a.web.start( CONF.main_host, port=CONF.game_streaming_agent_port )
-
-    
-            

@@ -2,6 +2,8 @@ import time
 import subprocess
 import re
 
+#as of right now, this script isn't used anywhere, but it's functioning so don't delete it because it still might come in handy
+
 class VirtualSink:
 
     sinkName = None
