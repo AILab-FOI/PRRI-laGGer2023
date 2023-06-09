@@ -92,55 +92,85 @@
         <!-- end scripts -->
         
         <script src="https://cdn.jsdelivr.net/npm/interactjs@1.10.11"></script>
-        <script>
-          window.addEventListener('load', function() {
-            const chatStream = document.getElementById('chat-stream');
-            const chatIcon = document.querySelector('.chat-icon');
-        
-            interact(chatStream).draggable({
-                allowFrom: chatIcon,
-                onmove: dragMoveListener,
-                modifiers: [
-                interact.modifiers.restrictRect({
-                    restriction: 'viewport'
-                })
-                ],
-                inertia: true
-            });
+<script>
+window.addEventListener('load', function() {
+  const chatContainer = document.getElementById('chat-stream');
+  const chatPanel = document.querySelector('.chat-panel');
+  const chatMessages = document.querySelector('.chat-messages');
+  const chatInput = document.getElementById('datasend');
 
-            interact(chatStream).resizable({
-                edges: {
-                    top: true,
-                    left: true,
-                    bottom: true,
-                    right: true
-                },
-                modifiers: [
-                interact.modifiers.restrictSize({
-                    min: { width: 200, height: 150 }
-                }),
-                ],
-                listeners: {
-                    move(event) {
-                        const { width, height } = event.rect;
-                        chatStream.style.width = `${width}px`;
-                        chatStream.style.height = `${height}px`;
-                    }
-                }
-            });
-        
-            function dragMoveListener(event) {
-              const target = event.target;
-              const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-              const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-        
-              target.style.transform = `translate(${x}px, ${y}px)`;
-        
-              target.setAttribute('data-x', x);
-              target.setAttribute('data-y', y);
-            }
-          });
-        </script>
+  interact(chatContainer).draggable({
+    allowFrom: chatPanel,
+    onmove: dragMoveListener,
+    modifiers: [
+      interact.modifiers.restrictRect({
+        restriction: 'viewport'
+      })
+    ],
+    inertia: true
+  });
+
+  let prevWidth = 0;
+  let prevHeight = 0;
+  interact(chatContainer).resizable({
+    edges: {
+      top: true,
+      left: true,
+      bottom: true,
+      right: true,
+    },
+    modifiers: [
+      interact.modifiers.restrictSize({
+        min: { width: 200, height: 150 },
+      }),
+    ],
+    listeners: {
+      move(event) {
+        const { width, height } = event.rect;
+        const { left, top } = event.deltaRect;
+
+        chatContainer.style.width = `${width}px`;
+        chatContainer.style.height = `${height}px`;
+
+        const offsetX = left - (width - prevWidth) / 2;
+        const offsetY = top - (height - prevHeight) / 2;
+
+        chatContainer.style.left = `${parseFloat(chatContainer.style.left) - offsetX}px`;
+        chatContainer.style.top = `${parseFloat(chatContainer.style.top) - offsetY}px`;
+
+        prevWidth = width;
+        prevHeight = height;
+
+        chatPanel.style.height = `${height - chatInput.offsetHeight - 20}px`;
+        chatMessages.style.height = `${height - chatInput.offsetHeight - 40}px`;
+      },
+      end(event) {
+        const { width, height } = event.rect;
+        const offsetX = (width - prevWidth) / 2;
+        const offsetY = (height - prevHeight) / 2;
+
+        chatContainer.style.left = `${parseFloat(chatContainer.style.left) - offsetX}px`;
+        chatContainer.style.top = `${parseFloat(chatContainer.style.top) - offsetY}px`;
+
+        prevWidth = width;
+        prevHeight = height;
+      }
+    },
+  });
+
+  function dragMoveListener(event) {
+    const target = event.target;
+    const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+    const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+    target.style.transform = `translate(${x}px, ${y}px)`;
+
+    target.setAttribute('data-x', x);
+    target.setAttribute('data-y', y);
+  }
+});
+
+</script>
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> 
     
@@ -170,15 +200,14 @@
         <audio id="audio" autoplay="true"></audio>
     </div>
     
-    <div id="chat-stream" style="position: absolute; width: 15%;">
-        <i class="fas fa-arrows-alt chat-icon"></i>
-        <!-- <button class="btn btn-default" autocomplete="off" id="startchat">Start chat</button> -->
-        <div class="panel panel-default">
-          <div class="panel-body relative" style="overflow-x: auto; height: 400px;" id="chatroom">
+    <div id="chat-stream" class="chat-stream ui-widget">
+        <div class="panel panel-default chat-panel">
+          <div class="panel-body relative chat-messages">
+            <!-- Chat messages content here -->
           </div>
           <input class="form-control" type="text" placeholder="Write a chatroom message" autocomplete="off" id="datasend" onkeypress="return checkEnter(this, event);">
         </div>
-      </div>
+      </div>      
 
     <div id="noVNC_fallback_error" class="noVNC_center">
         <div>
