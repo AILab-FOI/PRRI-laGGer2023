@@ -1,0 +1,20 @@
+on:
+  push:
+    branches: main
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Send Update Notification
+      id: notificationRequest
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: 'http://spider.foi.hr:12363/api/rezervacije/1'
+        method: 'POST'
+        customHeaders: '{"Content-Type": "application/json"}'
+        data: '{"notification": "update"}'
+    - name: Show Response
+      run: |
+        echo ${{ steps.notificationRequest.outputs.response }}
+        echo ${{ steps.notificationRequest.outputs.headers }}
