@@ -1,9 +1,11 @@
+name: Send notification
+
 on:
   push:
-    branches: laGGer-dev
+    branches: [laGGer-update, main]
 
 jobs:
-  deployment:
+  notify:
     runs-on: ubuntu-latest
     steps:
     - name: Send Update Notification
