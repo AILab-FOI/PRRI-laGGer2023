@@ -12,8 +12,8 @@ jobs:
       id: notificationRequest
       uses: fjogeleit/http-request-action@v1
       with:
-        url: 'http://spider.foi.hr:12363/api/rezervacije/1'
-        method: 'GET'
+        url: 'http://dragon.foi.hr:49998/update'
+        method: 'POST'
         customHeaders: '{"Content-Type": "application/json"}'
         data: '{"notification": "update"}'
     - name: Show Response
