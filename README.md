@@ -1,3 +1,5 @@
+workflow test
+
 # PRRI-laGGer2023
 
 Game development platforms course at the Faculty of Organization and Informatics, University of Zagreb, Croatia, Group 3 - laGGer platform
@@ -129,5 +131,3 @@ Now, Firefox should trust your self-signed certificate for any port on the speci
   9.  Close the "Certificate Manager" window and restart Chrome.
 
 Now, Chrome should trust your self-signed certificate for any port on the specified IP address or domain.
-
-workflow test 3
