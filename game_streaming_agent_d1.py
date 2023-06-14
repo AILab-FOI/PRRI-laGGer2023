@@ -1,0 +1,382 @@
+#!/usr/bin/env python3.6
+import argparse
+import json
+import sys
+import os
+import glob
+import subprocess as sp
+'novo dodano-g.c.'
+import time
+import threading
+
+
+import warnings
+warnings.filterwarnings("ignore")
+
+from talking_agent import TalkingAgent
+from spade.behaviour import OneShotBehaviour, CyclicBehaviour
+from spade.message import Message
+from spade.template import Template
+
+from aiosasl import AuthenticationFailure
+from aiohttp import web
+
+import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
+from flask import Flask, request as req, send_from_directory, redirect
+
+import redis
+from login.check_session import check_session
+
+from base64 import b64encode, b64decode
+
+import _thread
+
+from config import configuration
+
+class XMPPRegisterException( Exception ):
+    pass
+
+class CryptoError( Exception ):
+    pass
+
+r = redis.from_url('redis://localhost:6379')
+
+''' USER AND SYSTEM REGISTRATION '''
+def register( username, password ):
+    url = "https://%s:%d/register/%s/%s" % ( CONF.xmpp_server, CONF.xmpp_register_port, username, password )
+    response = requests.get( url, verify=False )
+
+    if response.status_code == 200:
+        result = response.content.decode('utf-8')
+        print( username, result )
+        if result == 'OK':
+            return True
+        else:
+            raise XMPPRegisterException( 'Cannot register user "%s", error from server: %s' % ( username, result ) )
+    else:
+        raise XMPPRegisterException( 'Error while communicating with server at "%s"' % CONF.xmpp_server )
+
+def register_system():
+    try:
+        register( CONF.game_streaming_agent, CONF.password )
+    except XMPPRegisterException as e:
+        print( e )
+    try:
+        register( CONF.save_game_agent, CONF.password )
+    except XMPPRegisterException as e:
+        print( e )
+    try:
+        register( CONF.video_streaming_agent, CONF.password )
+    except XMPPRegisterException as e:
+        print( e )
+    try:
+        register( CONF.building_agent, CONF.password )
+    except XMPPRegisterException as e:
+        print(e)
+    try:
+        register(CONF.chat_streaming_agent, CONF.password)
+    except XMPPRegisterException as e:
+        print( e )
+
+def encode( text ):
+    url = "https://%s:%d/encrypt/%s/%s" % ( CONF.crypto_service_host, CONF.crypto_service_port, text, CONF.crypto_password )
+    response = requests.get( url, verify=False )
+
+    if response.status_code == 200:
+        result = json.loads( response.content.decode('utf-8') )[ "result" ]
+        if result != 'Error':
+            return result
+        else:
+            raise CryptoError( "Error while encoding string: " + text )
+        
+def genereateURL(cookie, usedPort, janusHost, janusPort, videoRoom, chatRoom):
+            username = check_session(r, cookie)
+            print(username)
+            print(cookie)
+            gurl = "host=baltazar&port=%d&resize=scale&autoconnect=true&shared=true&janus_host=%s&janus_port=%d&user=%s&video_room=%s&chat_room=%s" % ( usedPort+2, janusHost, janusPort, username, videoRoom, chatRoom)
+            gurl = b64encode( gurl.encode() ).decode( 'ascii' )
+            url = "https://%s:%d/arcade/vnc.html?token="  % ( CONF.domain_name, usedPort)
+            return redirect(url+gurl, code=302)
+
+'''FLASK APP FOR ARCADE'''
+    
+app = Flask( __name__, static_url_path='' )
+@app.route( '/arcade/<path:path>' )
+def arcade( path ):
+    print(send_from_directory( 'arcade', path ))
+    return send_from_directory( 'arcade', path )
+
+
+'''X11Docker AND VNC RELATED FUNCTIONS'''
+
+def run_game( game, port ):
+    gconf = configuration( os.path.join( 'catridges', game, 'catridge_template.json' ) )
+    with sp.Popen(  [ 'bash', 'run_game.sh', game, str( port ), gconf.resolution ], stdout=sp.PIPE, stderr=sp.STDOUT, bufsize=1 ) as p1, open('logfile_game.txt', 'ab') as file:
+        for line in p1.stdout: 
+            sys.stdout.buffer.write( line ) 
+            file.write( line )
+
+def run_vnc( port1, port2 ):
+    abs_dir = os.path.dirname( os.path.realpath( '__file__' ) )
+    cert = os.path.join( abs_dir, CONF.cert )
+    key = os.path.join( abs_dir, CONF.key )
+    print(  [ 'novnc',  '--cert', cert, '--key', key, '--ssl-only', '--listen', str( port2 ), '--vnc', '0.0.0.0:%d' % port1 ] )
+    with sp.Popen(  [ 'novnc',  '--cert', cert, '--key', key, '--ssl-only', '--listen', str( port2 ), '--vnc', '0.0.0.0:%d' % port1 ], stdout=sp.PIPE, stderr=sp.STDOUT, bufsize=1 ) as p2, open('logfile_vnc.txt', 'ab') as file:
+        for line in p2.stdout: 
+            sys.stdout.buffer.write( line ) 
+            file.write( line )
+
+'''GAME STREAMING AGENT'''
+
+class GameStreamingAgent( TalkingAgent ):
+    def __init__( self, *args, **kwargs ):
+        super().__init__( *args, **kwargs )
+        self.web.add_get("/start_catridge", self.start_catridge, template=None )
+        self.web.add_get("/list_catridges", self.list_catridges, template='catridges/list.tpl' )
+        self.web.add_get("/text", self.textroom, template=None )
+        self.web.app.add_routes( [ web.static( '/catridges', 'catridges') ] )
+
+        '''novo dodano - garbage collection'''
+        self.last_activity_time = 0
+        self.inactivity_timeout = 20 * 60  # 20 minuta neaktivnosti
+        self.game_process = None
+        self.game_running = False
+
+        self.port = CONF.port_begin
+
+    def rotate_port( self ):
+        if self.port >= CONF.port_end:
+            self.port = CONF.port_begin
+        self.port += 3
+        return self.port
+    
+    '''novo dodano - garbage collection'''
+    def start_game(self, game_id, port):
+        self.game_process = threading.Thread(target=run_game, args=(game_id, port))
+        self.game_process.start()
+        self.game_running = True
+
+    def stop_game(self):
+        if self.game_process:
+            self.game_process.terminate()
+            self.game_running = False
+
+    def check_activity(self):
+        while True:
+            current_time = time.time()
+            if current_time - self.last_activity_time > self.inactivity_timeout and self.game_running:
+                self.stop_game()
+            time.sleep(60)  # Provjeravaj svaku minutu
+
+    def update_activity_time(self):
+        self.last_activity_time = time.time()
+
+
+
+    async def textroom(self, request):
+
+        '''novo dodano - g.c.'''
+        self.update_activity_time()
+
+        try:
+            return 
+        except:
+            return { 'error':'Something messed up in the html read' }
+        
+
+
+    async def list_catridges( self, request ):
+
+        '''novo dodano - g.c.'''
+        self.update_activity_time()
+
+        ''' return dummy list of available catridges. Request has to include player_id '''
+        try:
+            player_id = request.query[ 'player_id' ]
+        except:
+            return { 'error':'Invalid query string!' }
+
+        games = [ ( img.split( '/' )[ 1 ], img ) for img in glob.iglob( 'catridges/*/thumbnail.png' ) ]
+        print( games )
+
+        print(request.cookies.get("session"))
+
+        session_cookie = request.cookies.get("session")
+
+        username = check_session(r, session_cookie)
+
+        #username = r.get(request.cookies.get("session")).decode("utf-8")
+        print(username)
+        return { 'games':games,
+                 "sessionusername": username }
+        
+    async def start_catridge( self, request ):
+
+        '''novo dodano - g.c.'''
+        self.update_activity_time()
+        if not self.game_running:
+            self.start_game(game_id, PORT + 1)
+
+        ''' request has to include game_id and player_id '''
+        try:
+            game_id = request.query[ 'game_id' ]
+            player_id = request.query[ 'player_id' ]
+        except:
+            return { 'error':'Invalid query string!' }
+
+
+        PORT = self.rotate_port()
+        HOST = CONF.main_host
+
+        session_id = "%s_%s_%d" % ( game_id, player_id, PORT )
+        
+        callback = self.VideoStreamCallback() #  game_id, HOST, PORT 
+        metadata = {
+            "performative": "accept-proposal",
+            "in-reply-to":session_id
+        }
+        templateVideoStreamCallback = Template( metadata=metadata )
+        self.add_behaviour( callback, templateVideoStreamCallback )
+
+        callback = self.ChatStreamCallback()
+        metadata = {
+            "performative":"accept-proposal",
+            "in-reply-to":session_id
+        }
+        templateChatStreamCallback = Template(metadata=metadata)
+        self.add_behaviour(callback, templateChatStreamCallback)
+
+        
+        initialize = self.PrepareGamingRoom( session_id )
+        self.add_behaviour( initialize )
+        initialize.start()
+        await initialize.join()
+        self.remove_behaviour( initialize )
+        await callback.join()
+        self.remove_behaviour( callback )
+        
+        _thread.start_new_thread( run_game, ( game_id, PORT+1 ) )
+        _thread.start_new_thread( run_vnc, ( PORT+1, PORT+2 ) )
+
+        @app.route('/join/<session_id>')
+        def join_session(session_id):
+            # Logic to handle joining the session
+            # You can replace the print statement with your own implementation
+            print(f"Joining session pre function {session_id}")
+            return genereateURL(req.cookies.get("session"), PORT, CONF.janus_host, CONF.janus_port, self.videorooms[ session_id ], self.chatrooms[session_id]  )
+        
+        def run_flask():
+            app.run( port=PORT, host=HOST, debug=False, ssl_context=( CONF.cert, CONF.key ) )
+
+        _thread.start_new_thread( run_flask, () )
+
+        # TODO: encode URL (decode later in arcade/app/webutil.js)
+        gurl = "host=baltazar&port=%d&resize=scale&autoconnect=true&shared=true&janus_host=%s&janus_port=%d&user=%s&video_room=%s&chat_room=%s" % ( PORT+2, CONF.janus_host, CONF.janus_port, player_id, self.videorooms[ session_id ], self.chatrooms[session_id] )
+        vurl = gurl + "&view_only=true"
+
+        gurl = b64encode( gurl.encode() ).decode( 'ascii' )
+
+        url = "https://%s:%d/arcade/vnc.html?token="  % ( CONF.domain_name, PORT )
+        vurl = "https://%s:%d/join/"  % ( CONF.domain_name, PORT )
+        
+        result = { "gamer_url":url+gurl,
+                   "view_url":vurl+session_id,
+                   "session_id":session_id }
+
+        
+        return result
+
+    class PrepareGamingRoom( OneShotBehaviour ):
+        def __init__( self, session_id, *args, **kwargs ):
+            super().__init__( *args, **kwargs )
+            self.session_id = session_id
+            
+        async def run( self ):
+            msg = Message()
+            msg.to = "%s@%s" % ( CONF.video_streaming_agent, CONF.xmpp_server )
+            self.agent.say( msg.to )
+
+            msg.metadata = {
+                "performative":"request",
+                "content":"create-room",
+                "reply-with":self.session_id
+            }
+
+            msg.body = self.session_id
+        
+            await self.send( msg )
+
+            msg = Message()
+            msg.to = "%s@%s" % ( CONF.chat_streaming_agent, CONF.xmpp_server )
+            self.agent.say( msg.to )
+
+            msg.metadata = {
+                "performative":"request",
+                "content":"create-room",
+                "reply-with":self.session_id
+            }
+            msg.body = self.session_id
+        
+            await self.send( msg )
+
+        
+
+    class VideoStreamCallback( OneShotBehaviour ):
+        async def run( self ):
+            msg = Message()
+            msg = await self.receive( timeout=30 ) 
+            if msg:
+                self.agent.say( f"VideoStreamCallback: I received a message: {msg.body}" )
+                session_id = msg.metadata[ 'in-reply-to' ]
+                room_no = msg.metadata[ 'room-no' ]
+                self.agent.videorooms[ session_id ] = room_no
+    
+    class ChatStreamCallback(OneShotBehaviour):
+        async def run(self):
+            msg = Message()
+            msg = await self.receive(timeout=30)
+            if msg:
+                self.agent.say( f"ChatStreamCallback: I received a message: {msg.body}" )
+                session_id = msg.metadata[ 'in-reply-to' ]
+                room_no = msg.metadata[ 'room-no' ]
+                self.agent.chatrooms[ session_id ] = room_no
+                
+    
+    async def setup( self ): 
+        self.videorooms = {}
+        self.chatrooms = {}
+
+        '''novo dodano - g.c.'''
+        activity_checker = threading.Thread(target=self.check_activity)
+        activity_checker.start()
+
+        
+CONF = configuration()
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument( "--node", const=True, nargs='?', type=bool, help="Specify if the agent shoud be started as node. If blank it will start as a master server." )
+    args = parser.parse_args()
+    
+    NODE = bool( args.node )
+
+    name = "%s@%s" % ( CONF.game_streaming_agent, CONF.xmpp_server )
+    if not NODE:
+        try:
+            register_system()
+        except XMPPRegisterException:
+            pass
+    else:
+        try:
+            register( CONF.game_streaming_agent, CONF.password )
+        except XMPPRegisterException:
+            pass
+    a = GameStreamingAgent( name, CONF.password )
+    a.start()
+    a.web.start( CONF.main_host, port=CONF.game_streaming_agent_port )
+
+    
+            
