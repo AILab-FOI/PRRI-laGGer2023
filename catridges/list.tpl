@@ -24,7 +24,7 @@
 		function create_instance(game) {
 			var player = $("#player_id").val();
 			player = document.getElementById("player_id")
-			.innerHTML; // should change this cause it seems easy as hell to abuse
+				.innerHTML; // should change this cause it seems easy as hell to abuse
 			console.log(player);
 			$.getJSON("/start_catridge?game_id=" + game + "&player_id=" + player, function(data) {
 				if (data['error']) return;
@@ -47,7 +47,7 @@
 			</svg>
 			<nav class="header__nav">
 				<a class="header__link" name="player_id" id="player_id" href="#">{{sessionusername}}</a>
-				<a class="button" href="#">LOG OUT</a>
+				<a class="button" href="/logout">LOG OUT</a>
 			</nav>
 		</div>
 	</header>

@@ -134,8 +134,15 @@ class GameStreamingAgent( TalkingAgent ):
         self.web.add_get("/list_catridges", self.list_catridges, template='catridges/list.tpl' )
         self.web.add_get("/text", self.textroom, template=None )
         self.web.app.add_routes( [ web.static( '/catridges', 'catridges') ] )
-
+        self.web.add_get("/logout", self.logout, template=None)
         self.port = CONF.port_begin
+
+    
+    async def logout(self, request):
+        print("logging out")
+        session_cookie = request.cookies.get("session")
+        r.delete(session_cookie)
+        raise web.HTTPFound("http://games.foi.hr:5000/login")
 
     def rotate_port( self ):
         if self.port >= CONF.port_end:
