@@ -39,6 +39,8 @@
 
 .chat-panel {
   height: 100%;
+  word-wrap: break-word;
+  word-break: break-all;
 }
 
 .chat-messages {
