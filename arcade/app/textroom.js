@@ -119,7 +119,7 @@ $(document).ready(function () {
                                 else {
                                     // Public message
                                     console.log("a public message");
-                                    $('#chatroom').append('<p><b>' + from + ':</b> ' + msg);
+                                    $('#chatroom').append('<p><b><span class="username">' + from + ':</b> ' + msg);
                                     $('#chatroom').get(0).scrollTop = $('#chatroom').get(0).scrollHeight;
                                 }
                             }
