@@ -202,7 +202,7 @@ window.addEventListener('load', function() {
     
     <div id="chat-stream" class="chat-stream ui-widget">
         <div class="panel panel-default chat-panel">
-          <div class="panel-body relative chat-messages">
+          <div id="chatroom" class="panel-body relative chat-messages">
             <!-- Chat messages content here -->
           </div>
           <input class="form-control" type="text" placeholder="Write a chatroom message" autocomplete="off" id="datasend" onkeypress="return checkEnter(this, event);">
