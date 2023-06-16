@@ -1,0 +1,95 @@
+body {
+    background: url(city_pixelated_1.png) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+    font-family: INVASION2000;
+    font-style: normal;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.container {
+    display: block;
+    text-align: center;
+    min-width: 400px;
+    min-height: 530px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    box-sizing: border-box;
+    width: 30%;
+    margin-bottom: 70%;
+    border: 6px solid #27CBFF;
+    background: linear-gradient(180deg, rgba(250, 22, 255, 0.25) 0%, rgba(0, 0, 0, 0) 100%), rgba(0, 0, 0, 0.8);
+}
+
+.container__title {
+    text-align: center;
+    margin-top: 10%;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 11px #00DDF7;
+    color: #27CBFF;
+    font-size: 24px;
+}
+
+.container__title-logo {
+    font-size: 74px;
+    text-align: center;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 4px 11px #00DDF7;
+}
+
+.container__title-logo .container__title--highlighted {
+    text-shadow: 0px 3.13253px 12.5301px #FA00FF, 0px 4.6988px 0px #720D83;
+    color: #FA16FF;
+}
+
+.container__form-wrapper {
+    position: relative;
+    text-align: center;
+    margin: 10%;
+    display: block;
+}
+
+.container__textbox-wrapper {
+    text-align: center;
+    margin: 12%;
+    display: grid;
+}
+
+label {
+    color: #FFFFFF;
+    text-shadow: 0px 2px 0px #27CBFF;
+    text-align: left;
+    font-size: 30px;
+    margin-bottom: 5%;
+}
+
+input[type="text"],
+input[type="password"] {
+    -webkit-appearance: none;
+    box-shadow: none !important;
+    color: #FFFFFF;
+    font-family: inherit;
+    padding: 12px 5px;
+    font-size: 30px;
+    width: 100%;
+    text-shadow: 0px 2px 0px #27CBFF;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, rgba(39, 151, 255, 0.25) 0%, rgba(255, 22, 106, 0.25) 100%);
+}
+
+.container__button {
+    background: linear-gradient(180deg, rgba(39, 151, 255, 0.55) 0%, rgba(255, 22, 106, 0.55) 100%);
+    color: white;
+    font-family: inherit;
+    font-size: 30px;
+    text-align: center;
+    margin: 12px;
+    width: 75%;
+    box-sizing: border-box;
+    padding: 12px 5px;
+    text-shadow: 0px 3.13253px 12.5301px rgba(255, 22, 106, 0.55), 0px 4.6988px 0px rgba(255, 22, 106, 0.55);
+}

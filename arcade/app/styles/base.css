@@ -19,10 +19,18 @@
  * 10000: Max (used for polyfills)
  */
 
+ @font-face {
+  font-family: 'INVASION2000';
+  font-style: normal;
+  font-weight: 700;
+  src: local('?'), 
+  url('INVASION2000.TTF') format('truetype');
+}
+
 body {
   margin:0;
   padding:0;
-  font-family: Helvetica;
+  font-family: 'INVASION2000';
   /*Background image with light grey curve.*/
   background-color:#494949;
   background-repeat:no-repeat;
@@ -924,22 +932,16 @@ select:active {
 
 /*Default noVNC logo.*/
 /* From: http://fonts.googleapis.com/css?family=Orbitron:700 */
-@font-face {
-  font-family: 'Orbitron';
-  font-style: normal;
-  font-weight: 700;
-  src: local('?'), url('Orbitron700.woff') format('woff'),
-                   url('Orbitron700.ttf') format('truetype');
-}
 
 .noVNC_logo {
-  color:yellow;
-  font-family: 'Orbitron', 'OrbitronTTF', sans-serif;
-  line-height:90%;
-  text-shadow: 0.1em 0.1em 0 black;
+  color: #27CBFF;
+  font-family: 'Invasion2000', sans-serif;
+  line-height: 90%;
+  text-shadow: 1px 1px 12px #27CBFF;
 }
 .noVNC_logo span{
-  color:green;
+  color:#FA16FF;
+  text-shadow: 1px 1px 12px #FA16FF;
 }
 
 #noVNC_bell {

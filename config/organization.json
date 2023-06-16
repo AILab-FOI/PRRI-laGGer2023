@@ -2,26 +2,31 @@
     "main_host":"0.0.0.0",
     "domain_name":"127.0.0.1",
     "xmpp_server":"localhost",
+    "janus_host":"localhost",
     "xmpp_register_port":49999,
-    "password":"yoursupersecretpassword",
+    "password":"ChevaposConLepinhas4Eva!",
     "cert":"/etc/ssl/mycerts/server.crt",
     "key":"/etc/ssl/mycerts/server.key",
 
     "game_streaming_agent":"gamestreamer",
     "game_streaming_agent_port":49998,
-    "port_begin":50000,
+    "port_begin":50021,
     "port_end":60000,
 
     "save_game_agent":"savegame",
 
     "video_streaming_agent":"videostreamer",
     "video_streaming_agent_port":49997,
-    "janus_host":"localhost",
     "janus_port":8089,
     
     "building_agent":"builder",
 
     "crypto_service_host":"localhost",
     "crypto_service_port":49996,
-    "crypto_password":"anotherextrasecretpassword"
+    "crypto_password":"MamaKupilaTraktoraŠČ!",
+
+    "chat_streaming_agent":"chatstreamer",
+    "chat_streaming_agent_port":49995,
+    "janus_chat_port":8188
+
 }

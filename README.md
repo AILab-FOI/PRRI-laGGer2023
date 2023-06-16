@@ -40,8 +40,8 @@ Linux:
 #!/usr/bin/env bash
 
 VBoxManage modifyvm "laGGer" --natpf1 "janus1,tcp,,8088,,8088";
-VBoxManage modifyvm "laGGer" --natpf1 "janus1,tcp,,8089,,8089";
-VBoxManage modifyvm "laGGer" --natpf1 "janus1,tcp,,8188,,8188";
+VBoxManage modifyvm "laGGer" --natpf1 "janus2,tcp,,8089,,8089";
+VBoxManage modifyvm "laGGer" --natpf1 "janus3,tcp,,8188,,8188";
 
 for i in {49997..50100}; do
     echo "Opening port $i"
@@ -51,16 +51,18 @@ done
 
 echo "Done!"
 ```
+If it throws errors, try chmod 777, if it still doesn't work, tough luck.
 
 Or on Windoze:
 
 ```
 @echo off
+SET PATH=%PATH%;C:\Program Files\Oracle\VirtualBox 
 setlocal enabledelayedexpansion
 
 VBoxManage modifyvm "laGGer" --natpf1 "janus1,tcp,,8088,,8088"
-VBoxManage modifyvm "laGGer" --natpf1 "janus1,tcp,,8089,,8089"
-VBoxManage modifyvm "laGGer" --natpf1 "janus1,tcp,,8188,,8188"
+VBoxManage modifyvm "laGGer" --natpf1 "janus2,tcp,,8089,,8089"
+VBoxManage modifyvm "laGGer" --natpf1 "janus3,tcp,,8188,,8188"
 
 for /L %%i in (49997,1,50100) do (
     echo Opening port %%i
@@ -68,6 +70,7 @@ for /L %%i in (49997,1,50100) do (
     VBoxManage modifyvm "laGGer" --natpf1 "udp-port%%i,udp,,%%i,,%%i"
 )
 
+PAUSE
 echo Done!
 ```
 
@@ -89,11 +92,11 @@ And then as a normal user:
 If everything work and no errors happen, you should be able to open the interface at:
 
 ```
-http://dragon.foi.hr:49998/list_catridges?player_id=player2
+localhost:49998/list_catridges?player_id=player2
 ```
 
 
-http://dragon.foi.hr:49998/list_catridges?player_id=ivek
+localhost:49998/list_catridges?player_id=ivek
 
 
 Self signed certificates
@@ -129,3 +132,69 @@ Now, Firefox should trust your self-signed certificate for any port on the speci
   9.  Close the "Certificate Manager" window and restart Chrome.
 
 Now, Chrome should trust your self-signed certificate for any port on the specified IP address or domain.
+
+
+Setting up the VM
+-----------------------
+1. Copy the .vdi file somewhere on your device
+2. Launch your virtualbox software(in our case Oracle VM VirtualBox)
+3. 'New' button
+    - Name: laGGer
+    - Type: Linux
+    - Version: Debian(64-bit), next
+    - Memory & CPU whatever(reccomend 4096MB & min 2CPU), next
+    - Use an Existing Virtual Hard Disk File -> Choose -> Add -> Find the .vdi and choose it
+    - Finish
+4. Start the VM & login
+5. `cd src`
+6. `./install.sh`
+7. Shut down VM and run one of the scripts above to forward your ports.
+8. Run the `start_root_first.sh` & `start.sh`
+9. Visit `http://localhost:49998/list_catridges?player_id=player2`
+10. You should be able to see the list of available games
+
+
+Setting up Development environment
+---------------------------------
+After setting up your VM, we will now setup the development environment for it.  
+Prerequisites: ran `install.sh`, `start_root_first.sh`, `start.sh` & port forwarded without errors, aka did the instructions above successfully.
+
+1. Go into your favourite IDE or just use git to clone this repo into a folder. (If in VSCode, don't forget to change branches)
+2. Launch your VM and log in.
+3. Go to devices -> Shared folders -> Shared folder settings -> Click the small icon on the right with the plus sign to add a folder
+    - Folder path: Other -> navigate to where you cloned the repo
+    - Folder name: laGGer-dev
+    - Auto-mount & Make Permanent is checked
+    - Ok & apply
+4. In the VM `cd /media` & then `ls`
+5. If you see the folder `sf_laGGer-dev` you're almost there
+6. In the VM `sudo adduser $USER vboxsf`
+7. Reboot VM
+8. In the VM `cd /media` & `cd sf_laGGer-dev` & `ls`
+9. If all files are visible, `sudo ./start_root_first.sh` & `./start.sh`
+
+**You should now be able to run and test laGGer directly from the shared folder.** 
+
+Setting up Development environment (Windoze Edition)
+---------------------------------
+Cloning the repository via Windows will break most of the scripts due to CRLF and LF shenanigans, so in order to avoid this the repository should be cloned in the virtual machine itself.
+
+Prerequisites: Same as above
+
+1. Create an empty folder to store your repository in. 
+2. Launch the VM and log in.
+3. Add the **empty** folder to your VM shared folders (Step 3. in the instructions above)
+4. Navigate to the media folder by typing 'cd /media/'
+5. Type `sudo adduser $USER vboxsf` in the VM
+6. Reboot the VM
+7. Enter the shared folder (`cd /media/sf_name-of-the-folder`)
+8. Type `git clone https://github.com/AILab-FOI/PRRI-laGGer2023.git`
+9. You should now see the repo folder by typing `ls` (PRRI-laGGer2023), enter it with `cd PRRI-laGGer2023`
+10. To change branch, first type `git config --global --add safe.directory '*'`
+11. Switch to the laGGer-dev branch with `git checkout origin/laGGer-dev`
+
+All the scripts should now be working correctly, and you should be able to launch laGGer via the repo folder.
+=======
+Database specific setup
+-----------------------
+Tutorial available in `/login/README-workflow.txt`
