@@ -75,7 +75,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.css" />
     <!-- this is included as a normal file in order to catch script-loading errors as well -->
     <script src="app/error-handler.js"></script>
-    
+
+    <!-- BetterTTV global emotes -->
+    <script src="https://cdn.betterttv.net/betterttv.js" async></script>
+
+
     <!-- begin scripts -->
     <script type="module" crossorigin="anonymous" src="app/ui.js"></script>
     <script nomodule src="legacy/vendor/promise.js"></script>
@@ -203,7 +207,8 @@ window.addEventListener('load', function() {
     <div id="chat-stream" class="chat-stream ui-widget">
         <div class="panel panel-default chat-panel">
           <div id="chatroom" class="panel-body relative chat-messages">
-            <!-- Chat messages content here -->
+              <!-- Chat messages content here -->
+              <div id="chat-messages-wrapper"></div>
           </div>
           <input class="form-control" type="text" placeholder="Write a chatroom message" autocomplete="off" id="datasend" onkeypress="return checkEnter(this, event);">
         </div>
@@ -485,6 +490,76 @@ window.addEventListener('load', function() {
         <source src="app/sounds/bell.oga" type="audio/ogg">
         <source src="app/sounds/bell.mp3" type="audio/mpeg">
     </audio>
+    <script>/*
+    fetch('https://api.betterttv.net/3/cached/emotes/global')
+      .then(response => response.json())
+      .then(data => {
+        // Simulate chat messages (replace this with your actual chat message data)
+        const chatMessages = [
+          { user: 'user1', message: 'Hello :tf: how are you?' },
+          { user: 'user2', message: 'I\'m doing great! :CiGrip:' },
+          { user: 'user1', message: 'That\'s good to hear :tf:' }
+        ];
+
+        // Create a regular expression pattern to match emote codes
+        const emoteCodesPattern = new RegExp(`:${data.map(emote => emote.code).join('|')}:`, 'g');
+
+        // Iterate over the chat messages
+        chatMessages.forEach(chat => {
+          // Create a container for the chat message
+          const chatMessage = document.createElement('div');
+          chatMessage.className = 'chat-message';
+
+          // Create a span for the user
+          const userSpan = document.createElement('span');
+          userSpan.textContent = chat.user + ': ';
+          chatMessage.appendChild(userSpan);
+
+          // Split the message by words and process each word
+          const words = chat.message.split(' ');
+          words.forEach(word => {
+            // Check if the word matches an emote code
+            const matchingEmote = data.find(emote => emote.code === word);
+            if (matchingEmote) {
+              // Create an image element for the emote
+              const emoteImg = document.createElement('img');
+              emoteImg.src = `https://cdn.betterttv.net/emote/${matchingEmote.id}/1x`;
+              emoteImg.alt = matchingEmote.code;
+              emoteImg.className = 'emote';
+              chatMessage.appendChild(emoteImg);
+            } else {
+              // Create a span for regular text
+              const textSpan = document.createElement('span');
+              textSpan.textContent = word + ' ';
+              chatMessage.appendChild(textSpan);
+            }
+          });
+
+          // Add the chat message to the chat messages wrapper
+          document.getElementById('chat-messages-wrapper').appendChild(chatMessage);
+        });
+
+        // Detect and replace emote codes in input text
+        const inputField = document.getElementById('input-field');
+        inputField.addEventListener('input', () => {
+          const inputValue = inputField.value;
+
+          // Replace emote codes with emote images
+          const replacedValue = inputValue.replace(emoteCodesPattern, (match) => {
+            const matchingEmote = data.find(emote => emote.code === match);
+            if (matchingEmote) {
+              return `<img src="https://cdn.betterttv.net/emote/${matchingEmote.id}/1x" alt="${matchingEmote.code}" class="emote">`;
+            }
+            return match; // Return the original code if no matching emote is found
+          });
+          inputField.innerHTML = replacedValue;
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching global emotes:', error);
+      });
+      */
+    </script>
 </body>
 
 </html>
