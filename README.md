@@ -198,3 +198,5 @@ All the scripts should now be working correctly, and you should be able to launc
 Database specific setup
 -----------------------
 Tutorial available in `/login/README-workflow.txt`
+
+This work has been supported in part by the Croatian Science Foundation under the project number [IP-2019-04-5824](http://dragon.foi.hr:8888/ohai4games).
